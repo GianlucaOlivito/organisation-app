@@ -216,3 +216,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDEs & Editors
+.vscode/
+.idea/
+
+# Local Application Data / SQLite Databases
+*.db
+*.sqlite
+*.sqlite3
