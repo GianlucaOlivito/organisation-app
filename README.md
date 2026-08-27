@@ -4,7 +4,6 @@ The goal of this project is a multi-purpose organisation app written in python,
 which should be modular and easily extendable and scalable.
 
 ## Main Features
-* **Appointment Management:** Create appointments and reminders, integrated with existing calendars.
 * **Recipe Management:** Create and store recipes for meal planning.
 * **Meal Planning:** Schedule meals and menus over defined time intervals.
 * **Shopping List Generation:** Automatically generate shopping lists based on current food stock and planned menus.
@@ -21,13 +20,10 @@ uv sync
 # Run the application
 uv run main.py
 
-# Auto-fix linting issues & format code
+# Run tests, auto-fix linting issues & format code
+uv run pytest
 uv run ruff check --fix
 uv run ruff format
-
-# Run tests & linter
-uv run pytest
-uv run ruff check
 ```
 
 ## Further Documentation
