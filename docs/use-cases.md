@@ -2,12 +2,12 @@
 This document describes the high-level functional use cases supported by the core application logic.
 
 ## 1. Recipe Management
-* **UC-1.1: Create & Store Recipe**
+* **UC-1.1: Create, Modify and Delete Recipe**
   * **Actor:** User
-  * **Goal:** Store a recipe consisting of id, title, ingredients (quantities + units) and a description (preparation steps).
-* **UC-1.2: Browse & Search Recipes**
+  * **Goal:** Perform the following operations on a recipe consisting of id, title, ingredients (quantities + units) and a description (preparation steps): create, modify (+ save!) and delete.
+* **UC-1.2: Search and Filter Recipes**
   * **Actor:** User
-  * **Goal:** Filter stored recipes by name, ingredient or tags.
+  * **Goal:** Perform the following operations on stored recipes: search all, by ID and by name and filter by ingredients.
 
 ## 2. Meal Planning
 * **UC-2.1: Create Meal Plan**
