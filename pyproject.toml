@@ -8,6 +8,7 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+    "poethepoet>=0.48.0",
     "pytest>=9.1.1",
     "ruff>=0.16.4",
 ]
@@ -16,3 +17,10 @@ dev = [
 pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = "--import-mode=importlib"
+
+[tool.poe.tasks]
+qa = [
+    { cmd = "ruff check --fix" },
+    { cmd = "ruff format" },
+    { cmd = "pytest" }
+]

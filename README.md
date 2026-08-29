@@ -20,10 +20,13 @@ uv sync
 # Run the application
 uv run main.py
 
-# Run tests, auto-fix linting issues & format code
-uv run pytest
+# Run local QA checks before pushing
+uv run poe qa
+
+# Poethepoet task which automatically runs the following commands in that order:
 uv run ruff check --fix
 uv run ruff format
+uv run pytest
 ```
 
 ## Further Documentation
