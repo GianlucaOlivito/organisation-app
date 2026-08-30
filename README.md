@@ -4,8 +4,8 @@ The goal of this project is a multi-purpose organisation app written in python,
 which should be modular and easily extendable and scalable.
 
 ## Main Features
-* **Recipe Management:** Create and store recipes for meal planning.
-* **Meal Planning:** Schedule meals and menus over defined time intervals.
+* **Recipe Management:** Create, modify and delete recipes (compare UC-1.1); search and filter recipes (compare UC-1.2)
+* **Meal Planning:** Create, modify and delete menus (compare UC-2.1); search and filter menus (compare UC-2.2)
 * **Shopping List Generation:** Automatically generate shopping lists based on current food stock and planned menus.
 
 ## Quickstart
