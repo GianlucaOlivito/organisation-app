@@ -18,13 +18,18 @@ This document describes the high-level functional use cases supported by the cor
   * **Goal:** Perform the following operations on stored menus: search all and by ID and filter by date range.
   Note: The result of filtering by date range can be used in subdomain inventory to help calculating the content of a shopping list.
 
-## 3. Shopping List Generation
-* **UC-3.1: Account for Food Stock**
+## 3. Inventory Management
+* **UC-3.1: Create, Modify and Delete Inventory Item**
   * **Actor:** User / System
-  * **Goal:** Deduct available inventory items from the required ingredients to produce a final missing-items list.
-* **UC-3.2: Generate Shopping List**
+  * **Goal:** Perform the following operations on an inventory item consisting of ID, name, quantity and unit: create, modify (+ save!) and delete.
+  Note: System updates stock automatically, if a quantity changes.
+* **UC-3.2: Search Inventory**
   * **Actor:** User
-  * **Goal:** Calculate total required ingredients for a selected meal plan.
-* **UC-3.3: Export Shopping List**
-  * **Actor:** User
-  * **Goal:** Export a generated shopping list in a supported format.
+  * **Goal:** Perform the following operations on stored inventory items: search all, by ID and by name.
+* **UC-3.3: Generate Shopping List**
+  * **Actor:** User / System
+  * **Goal:** Generate a shopping list consisting of ID and a list of shopping list items (consisting of name, quantity and unit) for a selected date range.
+  Note: The System filters the MenuRepository by that date range to determine the needed quantities and searches the InventoryRepository for needed items to determine the already available quantities.
+* **UC-3.4: Export Shopping List**
+  * **Actor:** User / System
+  * **Goal:** Format a generated shopping list and export it in a supported format.
