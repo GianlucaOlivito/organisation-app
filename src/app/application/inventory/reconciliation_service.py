@@ -1,7 +1,9 @@
 import logging
-from collections import defaultdict
+from dataclasses import replace
 from datetime import date
 
+from app.application.common.calculators import calculate_menu_ingredients
+from app.application.common.validators import validate_date_range
 from app.application.meal_planning.search_service import MenuSearchService
 from app.application.recipes.search_service import RecipeSearchService
 from app.domain.inventory.inventory_item import InventoryItem
@@ -29,28 +31,25 @@ class InventoryReconciliationService:
         self._recipe_search_service = recipe_search_service
         logger.debug("InventoryReconciliationService initialized.")
 
-    def apply_shopping_list(self, shopping_list: ShoppingList) -> None:
-        inventory_map = {
+    def _map_inventory(self) -> dict[tuple[str, str], InventoryItem]:
+        return {
             (item.name, item.unit): item
             for item in self._inventory_search_service.get_all()
         }
+
+    def apply_shopping_list(self, shopping_list: ShoppingList) -> None:
+        inventory_map = self._map_inventory()
 
         for item in shopping_list.items:
             key = (item.name, item.unit)
             existing_item = inventory_map.get(key)
             if existing_item:
-                updated_item = InventoryItem(
-                    id=existing_item.id,
-                    name=existing_item.name,
-                    quantity=existing_item.quantity + item.quantity,
-                    unit=existing_item.unit,
-                )
+                new_qty = existing_item.quantity + item.quantity
+                updated_item = replace(existing_item, quantity=new_qty)
                 self._inventory_modification_service.modify(updated_item)
             else:
                 new_item = InventoryItem(
-                    name=item.name,
-                    quantity=item.quantity,
-                    unit=item.unit,
+                    name=item.name, quantity=item.quantity, unit=item.unit
                 )
                 self._inventory_modification_service.create(new_item)
         logger.info(
@@ -58,41 +57,16 @@ class InventoryReconciliationService:
         )
 
     def consume_meals_for_period(self, start_date: date, end_date: date) -> None:
-        if start_date > end_date:
-            logger.warning(
-                f"Consumption reconciliation failed: start_date ({start_date}) is after end_date ({end_date})."
-            )
-            raise ValueError("INVALID ARGUMENT: Start date cannot be after end date.")
+        validate_date_range(start_date, end_date)
         menus = self._menu_search_service.filter_by_date_range(start_date, end_date)
-        consumed_totals: dict[tuple[str, str], float] = defaultdict(float)
-
-        for menu in menus:
-            for course in menu.courses:
-                recipe = self._recipe_search_service.get_by_id(course.recipe_id)
-                if recipe is None:
-                    logger.warning(
-                        f"Recipe with ID '{course.recipe_id}' referenced in menu '{menu.id}' not found during reconciliation."
-                    )
-                    continue
-                for ingredient in recipe.ingredients:
-                    key = (ingredient.name, ingredient.unit)
-                    consumed_totals[key] += ingredient.quantity * course.portions
-
-        inventory_map = {
-            (item.name, item.unit): item
-            for item in self._inventory_search_service.get_all()
-        }
+        consumed_totals = calculate_menu_ingredients(menus, self._recipe_search_service)
+        inventory_map = self._map_inventory()
 
         for (name, unit), consumed_qty in consumed_totals.items():
             existing_item = inventory_map.get((name, unit))
             if existing_item:
                 new_qty = max(0.0, existing_item.quantity - consumed_qty)
-                updated_item = InventoryItem(
-                    id=existing_item.id,
-                    name=existing_item.name,
-                    quantity=new_qty,
-                    unit=existing_item.unit,
-                )
+                updated_item = replace(existing_item, quantity=new_qty)
                 self._inventory_modification_service.modify(updated_item)
         logger.info(
             f"Deducted inventory stock for consumed meals between {start_date} and {end_date}."

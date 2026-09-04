@@ -14,9 +14,7 @@ def test_create_valid_shopping_list_item():
 
 
 @pytest.mark.parametrize("invalid_quantity", [0.0, -1.5])
-def test_shopping_list_item_raises_error_for_non_positive_quantity(
-    invalid_quantity: float,
-):
+def test_shopping_list_item_raises_error_for_non_positive_quantity(invalid_quantity):
     with pytest.raises(
         ValueError, match="INVALID ARGUMENT: Item quantity must be positive."
     ):
@@ -24,7 +22,7 @@ def test_shopping_list_item_raises_error_for_non_positive_quantity(
 
 
 @pytest.mark.parametrize("invalid_name", ["", "   "])
-def test_shopping_list_item_raises_error_for_empty_name(invalid_name: str):
+def test_shopping_list_item_raises_error_for_empty_name(invalid_name):
     with pytest.raises(
         ValueError, match="INVALID ARGUMENT: Item name cannot be empty."
     ):
