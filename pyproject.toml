@@ -34,7 +34,7 @@ qa = [
 git-sync = [
     { cmd = "git checkout main" },
     { cmd = "git pull --prune" },
-    { shell = "git branch --merged main | Select-String -NotMatch 'main' | ForEach-Object { git branch -d $_.ToString().Trim() }" }
+    { shell = "git branch --merged main | Select-String -NotMatch 'main' | ForEach-Object { git branch -d $_.ToString().Trim() }", interpreter = "powershell" }
 ]
 [tool.poe.tasks.git-ship]
 sequence = [
