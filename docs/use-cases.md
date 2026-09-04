@@ -32,4 +32,4 @@ This document describes the high-level functional use cases supported by the cor
   Note: The System filters the MenuRepository by that date range to determine the needed quantities and searches the InventoryRepository for needed items to determine the already available quantities.
 * **UC-3.4: Export Shopping List**
   * **Actor:** User / System
-  * **Goal:** Format a generated shopping list and export it in a supported format.
+  * **Goal:** Format a generated shopping list and export it to a Markdown file (.md).
