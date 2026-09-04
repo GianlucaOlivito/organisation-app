@@ -6,7 +6,7 @@ which should be modular and easily extendable and scalable.
 ## Main Features
 * **Recipe Management:** Create, modify and delete recipes (compare UC-1.1); search and filter recipes (compare UC-1.2)
 * **Meal Planning:** Create, modify and delete menus (compare UC-2.1); search and filter menus (compare UC-2.2)
-* **Inventory Management:** Create, modify and delete inventory items (compare UC-3.1); search inventory (compare UC-3.2); generate shopping list (UC-3.3); export shopping list (compare UC-3.4)
+* **Inventory Management:** Create, modify and delete inventory items (compare UC-3.1); search inventory (compare UC-3.2); generate shopping list (UC-3.3); export shopping list to a Markdown file (.md, compare UC-3.4)
 
 ## Quickstart
 ### Prerequisites
