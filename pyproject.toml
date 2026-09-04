@@ -31,3 +31,15 @@ qa = [
     { cmd = "ruff format" },
     { cmd = "pytest" }
 ]
+git-sync = [
+    { cmd = "git checkout main" },
+    { cmd = "git pull --prune" },
+    { shell = "git branch --merged main | Select-String -NotMatch 'main' | ForEach-Object { git branch -d $_.ToString().Trim() }" }
+]
+[tool.poe.tasks.git-ship]
+sequence = [
+    { cmd = "git add ." },
+    { cmd = "git commit -m \"$msg\"" },
+    { cmd = "git push -u origin HEAD" }
+]
+args = [{ name = "msg", options = ["-m", "--message"], required = true }]

@@ -19,14 +19,27 @@ uv sync
 
 # Run the application
 uv run main.py
+```
 
-# Run local QA checks before pushing
+### UV Poethepoet Task Runner for Workflow Automation
+```bash
 uv run poe qa
+# Task 'qa':
+ruff check --fix
+ruff format
+pytest
 
-# Poethepoet task which automatically runs the following commands in that order:
-uv run ruff check --fix
-uv run ruff format
-uv run pytest
+uv run poe git-ship -m "<type>(<scope>): <description>"
+# Task 'git-ship':
+git add .
+git commit -m "$msg" # consumes defined commit message as an argument
+git push -u origin HEAD
+
+uv run poe git-sync
+# Task 'git-sync':
+git checkout main
+git pull --prune
+git branch --merged main | Select-String -NotMatch 'main' | ForEach-Object { git branch -d $_.ToString().Trim() }
 ```
 
 ## Further Documentation
