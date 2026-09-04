@@ -4,7 +4,7 @@ from app.domain.recipes.recipe import Recipe
 from app.domain.recipes.recipe_ingredient import RecipeIngredient
 
 
-def test_create_recipe_with_defaults() -> None:
+def test_create_recipe_with_defaults():
     recipe = Recipe(name="Pancakes")
 
     assert isinstance(recipe.id, UUID)
@@ -13,7 +13,7 @@ def test_create_recipe_with_defaults() -> None:
     assert recipe.instructions == ""
 
 
-def test_create_recipe_with_custom_attributes() -> None:
+def test_create_recipe_with_custom_attributes():
     ingredient = RecipeIngredient(name="Milk", quantity=250.0, unit="ml")
     recipe = Recipe(
         name="Pancakes", ingredients=[ingredient], instructions="Mix and fry."
@@ -25,7 +25,7 @@ def test_create_recipe_with_custom_attributes() -> None:
     assert recipe.instructions == "Mix and fry."
 
 
-def test_recipe_instances_have_unique_uuids_and_isolated_lists() -> None:
+def test_recipe_instances_have_unique_uuids_and_isolated_lists():
     recipe_1 = Recipe(name="Recipe 1")
     recipe_2 = Recipe(name="Recipe 2")
 

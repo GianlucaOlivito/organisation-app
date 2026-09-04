@@ -5,7 +5,7 @@ import pytest
 from app.domain.inventory.inventory_item import InventoryItem
 
 
-def test_create_valid_inventory_item() -> None:
+def test_create_valid_inventory_item():
     inventory_item = InventoryItem(name="Flour", quantity=500.0, unit="g")
 
     assert inventory_item.name == "Flour"
@@ -13,13 +13,13 @@ def test_create_valid_inventory_item() -> None:
     assert inventory_item.unit == "g"
 
 
-def test_create_inventory_item_with_empty_unit() -> None:
+def test_create_inventory_item_with_empty_unit():
     inventory_item = InventoryItem(name="Egg", quantity=12.0, unit="")
 
     assert inventory_item.unit == ""
 
 
-def test_inventory_item_generates_unique_uuid() -> None:
+def test_inventory_item_generates_unique_uuid():
     item_1 = InventoryItem(name="Apple", quantity=5.0, unit="")
     item_2 = InventoryItem(name="Apple", quantity=5.0, unit="")
 
@@ -27,7 +27,7 @@ def test_inventory_item_generates_unique_uuid() -> None:
     assert item_1.id != item_2.id
 
 
-def test_inventory_item_raises_error_for_negative_quantity() -> None:
+def test_inventory_item_raises_error_for_negative_quantity():
     with pytest.raises(
         ValueError, match="INVALID ARGUMENT: Item quantity cannot be negative."
     ):
@@ -35,7 +35,7 @@ def test_inventory_item_raises_error_for_negative_quantity() -> None:
 
 
 @pytest.mark.parametrize("invalid_name", ["", "   "])
-def test_inventory_item_raises_error_for_empty_name(invalid_name: str) -> None:
+def test_inventory_item_raises_error_for_empty_name(invalid_name):
     with pytest.raises(
         ValueError, match="INVALID ARGUMENT: Item name cannot be empty."
     ):

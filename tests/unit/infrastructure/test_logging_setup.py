@@ -8,8 +8,6 @@ from app.infrastructure.logging_setup import AppFilter, ColoredFormatter, setup_
 
 @pytest.fixture
 def clean_root_logger():
-    """Resets root logger handlers before and after test execution."""
-
     logger = logging.getLogger()
     original_handlers = logger.handlers[:]
     logger.handlers.clear()
