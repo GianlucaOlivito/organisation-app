@@ -12,6 +12,9 @@ class Settings:
 
     log_level: str = "INFO"
     log_file_path: Path = ROOT_DIR / "logs" / "app.log"
+    recipes_file_path: Path = ROOT_DIR / "data" / "recipes.json"
+    menus_file_path: Path = ROOT_DIR / "data" / "menus.json"
+    inventory_file_path: Path = ROOT_DIR / "data" / "inventory.json"
 
 
 settings = Settings()
