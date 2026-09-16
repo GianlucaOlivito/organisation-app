@@ -232,3 +232,5 @@ Desktop.ini
 *.sqlite
 *.sqlite3
 data/
+exports/
+logs/
