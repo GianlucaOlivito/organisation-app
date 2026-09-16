@@ -83,7 +83,7 @@ def test_get_all_skips_invalid_menu_entry(json_repo, tmp_path, caplog):
 
     assert len(menus) == 1
     assert menus[0].description == "Good Menu"
-    assert "Skipping invalid menu entry" in caplog.text
+    assert "Skipping invalid entity" in caplog.text
 
 
 def test_get_by_id_returns_menu_when_found(json_repo, sample_menu):
@@ -151,6 +151,6 @@ def test_delete_non_existent_menu_logs_warning(json_repo, caplog):
         json_repo.delete(non_existent_id)
 
     assert (
-        f"Attempted to delete non-existent menu with ID '{non_existent_id}'"
+        f"Attempted to delete non-existent entity with ID '{non_existent_id}'"
         in caplog.text
     )
