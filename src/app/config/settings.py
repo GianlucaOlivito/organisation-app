@@ -15,6 +15,7 @@ class Settings:
     recipes_file_path: Path = ROOT_DIR / "data" / "recipes.json"
     menus_file_path: Path = ROOT_DIR / "data" / "menus.json"
     inventory_file_path: Path = ROOT_DIR / "data" / "inventory.json"
+    shopping_list_file_path: Path = ROOT_DIR / "exports" / "shopping_list.md"
 
 
 settings = Settings()

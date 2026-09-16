@@ -28,6 +28,8 @@ Dependencies strictly flow **inward**. Outer layers depend on inner layers; inne
   * Translates external data structures into domain objects and vice-versa.
 
 ### 4. Infrastructure (`src/app/infrastructure`)
-* **Role:** Low-level configuration, framework instantiation, dependency injection, and application entry points
+* **Role:** Low-level configuration, framework instantiation, dependency injection (composition root),
+logging setup and application entry points
 * **Rules:**
-  * Wires adapters to application ports.
+  * Wires concrete adapters to application ports.
+  * Must not contain domain or application business logic.
