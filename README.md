@@ -8,6 +8,9 @@ which should be modular and easily extendable and scalable.
 * **Meal Planning:** Create, modify and delete menus (compare UC-2.1); search and filter menus (compare UC-2.2)
 * **Inventory Management:** Create, modify and delete inventory items (compare UC-3.1); search inventory (compare UC-3.2); generate shopping list (UC-3.3); export shopping list to a Markdown file (.md, compare UC-3.4)
 
+## User Interface
+**Flet** is used as the Python desktop framework for the application's graphical interface. All use cases defined in [Use Cases](docs/use-cases.md) are accessible through this GUI.
+
 ## Quickstart
 ### Prerequisites
 * [uv](https://docs.astral.sh/uv/) (python project management tool)
