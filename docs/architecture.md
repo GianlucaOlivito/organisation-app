@@ -22,10 +22,11 @@ Dependencies strictly flow **inward**. Outer layers depend on inner layers; inne
   * Defines abstract interfaces (python `Protocol` or `ABC`) for repositories and external services.
 
 ### 3. Adapters (`src/app/adapters`)
-* **Role:** Implementations of application ports (e.g. external API clients or UI components)
+* **Role:** Driving UI components (`src/app/adapters/ui`) and implementations of application ports
 * **Rules:**
-  * Implements ports defined in `application` layer.
-  * Translates external data structures into domain objects and vice-versa.
+  * Implements abstract ports defined in `application` layer (e.g., JSON repositories, file exporters).
+  * Defines driving UI adapters (e.g., Flet views) that consume application services to trigger use cases.
+  * Translates external data structures and UI inputs into domain objects and vice-versa.
 
 ### 4. Infrastructure (`src/app/infrastructure`)
 * **Role:** Low-level configuration, framework instantiation, dependency injection (composition root),
