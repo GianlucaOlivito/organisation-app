@@ -10,6 +10,11 @@ ROOT_DIR: Path = next(
 class Settings:
     """Utility class for application settings."""
 
+    app_title: str = "Organisation App"
+    window_width: int = 1000
+    window_height: int = 700
+    window_min_width: int = 800
+    window_min_height: int = 550
     log_level: str = "INFO"
     log_file_path: Path = ROOT_DIR / "logs" / "app.log"
     recipes_file_path: Path = ROOT_DIR / "data" / "recipes.json"
