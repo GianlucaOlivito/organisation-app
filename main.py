@@ -12,8 +12,9 @@ logger = logging.getLogger(__name__)
 def main() -> None:
     setup_logging()
     logger.info("Starting application...")
-    app = App(create_container())
-    ft.run(app.__call__)
+    container = create_container()
+    app = App(container)
+    ft.run(app.__call__, assets_dir=str(container.settings.assets_dir))
     logger.info("Application closed.")
 
 
