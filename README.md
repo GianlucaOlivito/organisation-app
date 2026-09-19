@@ -3,6 +3,10 @@
 The goal of this project is a multi-purpose organisation app written in python,
 which should be modular and easily extendable and scalable.
 
+## Application Information
+* **Title:** Savoria
+* **Logo:** Stored in [App Logo](assets/logo.ico)
+
 ## Main Features
 * **Recipe Management:** Create, modify and delete recipes (compare UC-1.1); search and filter recipes (compare UC-1.2)
 * **Meal Planning:** Create, modify and delete menus (compare UC-2.1); search and filter menus (compare UC-2.2)

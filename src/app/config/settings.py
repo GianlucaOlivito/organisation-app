@@ -10,7 +10,9 @@ ROOT_DIR: Path = next(
 class Settings:
     """Utility class for application settings."""
 
-    app_title: str = "Organisation App"
+    app_title: str = "Savoria"
+    assets_dir: Path = ROOT_DIR / "assets"
+    app_logo_file_name: str = "logo.ico"
     window_width: int = 1000
     window_height: int = 700
     window_min_width: int = 800
