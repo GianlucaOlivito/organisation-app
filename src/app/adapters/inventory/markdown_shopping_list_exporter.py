@@ -11,7 +11,7 @@ class MarkdownShoppingListExporter(ShoppingListExporter):
     """Implementation of UC-3.4: Export Shopping List to a Markdown file."""
 
     def __init__(self) -> None:
-        logger.debug("MarkdownShoppingListExporter initialized.")
+        logger.debug("Initialized %s.", self.__class__.__name__)
 
     def export(self, shopping_list: ShoppingList, destination: Path) -> None:
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -26,4 +26,4 @@ class MarkdownShoppingListExporter(ShoppingListExporter):
             lines.append(f"| [ ] | {item.quantity} | {unit_str} | {item.name} |")
         content = "\n".join(lines) + "\n"
         destination.write_text(content, encoding="utf-8")
-        logger.info("Exported shopping list to %s.", destination)
+        logger.info("Exported shopping list to '%s'.", destination.name)

@@ -29,7 +29,7 @@ class InventoryReconciliationService:
         self._inventory_modification_service = inventory_modification_service
         self._menu_search_service = menu_search_service
         self._recipe_search_service = recipe_search_service
-        logger.debug("InventoryReconciliationService initialized.")
+        logger.debug("Initialized %s.", self.__class__.__name__)
 
     def _map_inventory(self) -> dict[tuple[str, str], InventoryItem]:
         return {
@@ -53,7 +53,8 @@ class InventoryReconciliationService:
                 )
                 self._inventory_modification_service.create(new_item)
         logger.info(
-            f"Updated inventory after applying shopping list with ID '{shopping_list.id}'."
+            "Updated inventory after applying shopping list with ID '%s'.",
+            shopping_list.id,
         )
 
     def consume_meals_for_period(self, start_date: date, end_date: date) -> None:
@@ -69,5 +70,7 @@ class InventoryReconciliationService:
                 updated_item = replace(existing_item, quantity=new_qty)
                 self._inventory_modification_service.modify(updated_item)
         logger.info(
-            f"Deducted inventory stock for consumed meals between {start_date} and {end_date}."
+            "Deducted inventory items for meals consumed between '%s' and '%s'.",
+            start_date,
+            end_date,
         )

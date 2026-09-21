@@ -71,7 +71,7 @@ def test_get_all_skips_invalid_inventory_item(json_repo, tmp_path, caplog):
 
     assert len(items) == 1
     assert items[0].name == "Good Item"
-    assert "Skipping invalid entity" in caplog.text
+    assert "Failed to deserialize entity" in caplog.text
 
 
 def test_get_by_id_returns_item_when_found(json_repo, sample_item):

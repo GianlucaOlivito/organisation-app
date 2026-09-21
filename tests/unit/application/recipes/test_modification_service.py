@@ -21,7 +21,7 @@ def test_create_recipe_already_exists_raises_error(
 
     with pytest.raises(
         ValueError,
-        match=f"INVALID ARGUMENT: Recipe '{sample_recipe.name}' already exists.",
+        match=f"INVALID ARGUMENT: Recipe with ID '{sample_recipe.id}' already exists.",
     ):
         recipes_modification_service.create(sample_recipe)
 
@@ -42,7 +42,7 @@ def test_modify_recipe_not_found_raises_error(recipes_modification_service):
 
     with pytest.raises(
         ValueError,
-        match=f"INVALID ARGUMENT: Recipe '{unregistered_recipe.name}' does not exist.",
+        match=f"INVALID ARGUMENT: Recipe with ID '{unregistered_recipe.id}' does not exist.",
     ):
         recipes_modification_service.modify(unregistered_recipe)
 

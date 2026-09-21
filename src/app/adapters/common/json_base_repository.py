@@ -15,9 +15,9 @@ class JsonBaseRepository[T](ABC):
     def __init__(self, file_path: Path) -> None:
         self._file_path = file_path
         logger.debug(
-            "%s initialized with path: %s",
+            "Initialized %s with file '%s'.",
             self.__class__.__name__,
-            self._file_path,
+            self._file_path.name,
         )
 
     @abstractmethod
@@ -33,8 +33,8 @@ class JsonBaseRepository[T](ABC):
             try:
                 items.append(self._dict_to_entity(item))
             except (KeyError, ValueError, TypeError) as e:
-                logger.error("Skipping invalid entity: %s. Error: %s", item, e)
-        logger.debug("Retrieved %d entities from %s.", len(items), self._file_path)
+                logger.error("Failed to deserialize entity '%s': %s", item, e)
+        logger.debug("Found %d entities.", len(items))
         return items
 
     def get_by_id(self, id: UUID) -> T | None:
@@ -42,7 +42,7 @@ class JsonBaseRepository[T](ABC):
         if entity:
             logger.debug("Found entity with ID '%s'.", id)
         else:
-            logger.debug("No entity found with ID '%s'.", id)
+            logger.debug("Failed to find entity with ID '%s'.", id)
         return entity
 
     def save(self, entity: T) -> None:
@@ -57,7 +57,7 @@ class JsonBaseRepository[T](ABC):
             items.append(entity)
         serialized = [self._entity_to_dict(item) for item in items]
         write_json_file(self._file_path, serialized)
-        logger.debug("Saved entity (ID: %s) to '%s'.", entity.id, self._file_path)
+        logger.debug("Saved entity with ID '%s'.", entity.id)
 
     def delete(self, id: UUID) -> None:
         items = self.get_all()
@@ -65,6 +65,6 @@ class JsonBaseRepository[T](ABC):
         if len(filtered) != len(items):
             serialized = [self._entity_to_dict(item) for item in filtered]
             write_json_file(self._file_path, serialized)
-            logger.debug("Deleted entity with ID '%s' from '%s'.", id, self._file_path)
+            logger.debug("Deleted entity with ID '%s'.", id)
         else:
             logger.warning("Attempted to delete non-existent entity with ID '%s'.", id)

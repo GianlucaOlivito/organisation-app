@@ -36,7 +36,7 @@ def test_read_json_file_logs_error_and_returns_empty_list_on_corrupt_json(
         result = read_json_file(file_path)
 
     assert result == []
-    assert "Failed to decode JSON" in caplog.text
+    assert "Failed to decode" in caplog.text
 
 
 def test_read_json_file_logs_error_and_returns_empty_list_on_os_error(tmp_path, caplog):
@@ -49,7 +49,7 @@ def test_read_json_file_logs_error_and_returns_empty_list_on_os_error(tmp_path, 
         result = read_json_file(file_path)
 
     assert result == []
-    assert "Failed to access file" in caplog.text
+    assert "Failed to access" in caplog.text
 
 
 def test_write_json_file_creates_dir_and_writes_valid_json(tmp_path):
@@ -72,4 +72,4 @@ def test_write_json_file_logs_error_and_raises_os_error(tmp_path, caplog):
     ):
         write_json_file(file_path, data)
 
-    assert "Failed to write JSON file" in caplog.text
+    assert "Failed to write" in caplog.text

@@ -15,11 +15,13 @@ def read_json_file(file_path: Path) -> list[dict[str, Any]]:
             return data if isinstance(data, list) else []
     except json.JSONDecodeError as e:
         logger.error(
-            "Failed to decode JSON from %s: %s. Returned empty list.", file_path, e
+            "Failed to decode '%s': %s. Returned empty list.", file_path.name, e
         )
         return []
     except OSError as e:
-        logger.error("Failed to access file %s: %s. Returned empty list.", file_path, e)
+        logger.error(
+            "Failed to access '%s': %s. Returned empty list.", file_path.name, e
+        )
         return []
 
 
@@ -29,5 +31,5 @@ def write_json_file(file_path: Path, data: list[dict[str, Any]]) -> None:
         with open(file_path, mode="w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
     except OSError as e:
-        logger.error("Failed to write JSON file at %s: %s.", file_path, e)
+        logger.error("Failed to write '%s': %s", file_path.name, e)
         raise

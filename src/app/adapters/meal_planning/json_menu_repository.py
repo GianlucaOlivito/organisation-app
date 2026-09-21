@@ -54,9 +54,9 @@ class JsonMenuRepository(JsonBaseRepository[Menu], MenuRepository):
             if start_date <= menu.scheduled_date <= end_date:
                 matching_menus.append(menu)
         logger.debug(
-            "Filtered menus by date range %s to %s. Found %d matching menus.",
+            "Found %d menus between '%s' and '%s'.",
+            len(matching_menus),
             start_date,
             end_date,
-            len(matching_menus),
         )
         return matching_menus

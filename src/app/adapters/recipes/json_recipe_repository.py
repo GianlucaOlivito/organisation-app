@@ -56,15 +56,15 @@ class JsonRecipeRepository(JsonBaseRepository[Recipe], RecipeRepository):
             None,
         )
         if recipe:
-            logger.debug("Found recipe with name '%s'.", name)
+            logger.debug("Found entity with name '%s'.", name)
         else:
-            logger.debug("No recipe found with name '%s'.", name)
+            logger.debug("Failed to find entity with name '%s'.", name)
         return recipe
 
     def filter_by_ingredients(self, ingredients: list[str]) -> list[Recipe]:
-        if not ingredients:
-            return self.get_all()
         target_ingredients = {ing.strip().lower() for ing in ingredients if ing.strip()}
+        if not target_ingredients:
+            return self.get_all()
         matching_recipes: list[Recipe] = []
         for recipe in self.get_all():
             recipe_ingredient_names = {
@@ -72,9 +72,10 @@ class JsonRecipeRepository(JsonBaseRepository[Recipe], RecipeRepository):
             }
             if target_ingredients.issubset(recipe_ingredient_names):
                 matching_recipes.append(recipe)
+        ingredients_str = ", ".join(sorted(target_ingredients))
         logger.debug(
-            "Filtered recipes by ingredients %s. Found %d matching recipes.",
-            target_ingredients,
+            "Found %d recipes matching ingredients '%s'.",
             len(matching_recipes),
+            ingredients_str,
         )
         return matching_recipes
