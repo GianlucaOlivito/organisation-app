@@ -25,5 +25,5 @@ class App:
 
     async def __call__(self, page: ft.Page) -> None:
         await self._configure_page(page)
-        page.add(AppLayout())
+        page.add(AppLayout(self._container))
         page.update()
