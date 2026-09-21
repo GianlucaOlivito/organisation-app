@@ -17,8 +17,9 @@ class Settings:
     window_height: int = 700
     window_min_width: int = 800
     window_min_height: int = 550
-    log_level: str = "INFO"
+    log_level: str = "DEBUG"
     log_file_path: Path = ROOT_DIR / "logs" / "app.log"
+    log_buffer_size: int = 1000
     recipes_file_path: Path = ROOT_DIR / "data" / "recipes.json"
     menus_file_path: Path = ROOT_DIR / "data" / "menus.json"
     inventory_file_path: Path = ROOT_DIR / "data" / "inventory.json"

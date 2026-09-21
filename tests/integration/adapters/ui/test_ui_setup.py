@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import flet as ft
 import pytest
@@ -9,7 +9,8 @@ from app.infrastructure.container import create_container
 
 
 @pytest.mark.asyncio
-async def test_app_initialization_configures_page_settings():
+@patch("app.infrastructure.container.setup_logging")
+async def test_app_initialization_configures_page_settings(mock_setup_logging):
     container = create_container()
     app = App(container=container)
     page = MagicMock(spec=ft.Page)

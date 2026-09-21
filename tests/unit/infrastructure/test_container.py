@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from app.adapters.inventory.markdown_shopping_list_exporter import (
     MarkdownShoppingListExporter,
 )
@@ -15,7 +17,8 @@ from app.config.settings import Settings
 from app.infrastructure.container import Container, create_container
 
 
-def test_create_container_default_settings():
+@patch("app.infrastructure.container.setup_logging")
+def test_create_container_default_settings(mock_setup_logging):
     container = create_container()
 
     assert isinstance(container, Container)
@@ -38,7 +41,8 @@ def test_create_container_default_settings():
     assert isinstance(container.recipe_search_service, RecipeSearchService)
 
 
-def test_create_container_custom_settings(tmp_path):
+@patch("app.infrastructure.container.setup_logging")
+def test_create_container_custom_settings(mock_setup_logging, tmp_path):
     custom_settings = Settings(
         recipes_file_path=tmp_path / "test_recipes.json",
         menus_file_path=tmp_path / "test_menus.json",
