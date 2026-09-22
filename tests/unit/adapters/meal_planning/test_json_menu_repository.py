@@ -83,7 +83,7 @@ def test_get_all_skips_invalid_menu_entry(json_repo, tmp_path, caplog):
 
     assert len(menus) == 1
     assert menus[0].description == "Good Menu"
-    assert "Skipping invalid entity" in caplog.text
+    assert "Failed to deserialize entity" in caplog.text
 
 
 def test_get_by_id_returns_menu_when_found(json_repo, sample_menu):

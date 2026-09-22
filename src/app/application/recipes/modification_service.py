@@ -12,33 +12,33 @@ class RecipeModificationService:
     """Service for use case UC-1.1: Create, Modify and Delete Recipe."""
 
     def __init__(self, recipe_repository: RecipeRepository) -> None:
-        logger.debug("RecipeModificationService initialized.")
+        logger.debug("Initialized %s.", self.__class__.__name__)
         self._recipe_repository = recipe_repository
 
     def create(self, recipe: Recipe) -> Recipe:
         if self._recipe_repository.get_by_id(recipe.id):
-            logger.warning(f"Recipe creation failed: {recipe.name} already exists.")
+            logger.warning("Failed to create existing recipe with ID '%s'.", recipe.id)
             raise ValueError(
-                f"INVALID ARGUMENT: Recipe '{recipe.name}' already exists."
+                f"INVALID ARGUMENT: Recipe with ID '{recipe.id}' already exists."
             )
         self._recipe_repository.save(recipe)
-        logger.info(f"Recipe created: {recipe.name}")
+        logger.info("Created recipe with ID '%s'.", recipe.id)
         return recipe
 
     def modify(self, recipe: Recipe) -> None:
         if not self._recipe_repository.get_by_id(recipe.id):
-            logger.warning(f"Recipe modification failed: {recipe.name} does not exist.")
+            logger.warning(
+                "Failed to modify non-existent recipe with ID '%s'.", recipe.id
+            )
             raise ValueError(
-                f"INVALID ARGUMENT: Recipe '{recipe.name}' does not exist."
+                f"INVALID ARGUMENT: Recipe with ID '{recipe.id}' does not exist."
             )
         self._recipe_repository.save(recipe)
-        logger.info(f"Recipe modified: {recipe.name}")
+        logger.info("Modified recipe with ID '%s'.", recipe.id)
 
     def delete(self, id: UUID) -> None:
         if not self._recipe_repository.get_by_id(id):
-            logger.warning(
-                f"Recipe deletion failed: Recipe with ID '{id}' does not exist."
-            )
+            logger.warning("Failed to delete non-existent recipe with ID '%s'.", id)
             raise ValueError(f"INVALID ARGUMENT: Recipe with ID '{id}' does not exist.")
         self._recipe_repository.delete(id)
-        logger.info(f"Recipe with ID '{id}' deleted.")
+        logger.info("Deleted recipe with ID '%s'.", id)

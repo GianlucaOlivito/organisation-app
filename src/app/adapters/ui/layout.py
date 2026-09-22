@@ -1,7 +1,10 @@
 import flet as ft
 
+from app.infrastructure.container import Container
+
 from .components.sidebar import NavigationItemConfig, Sidebar
 from .views.inventory_view import InventoryView
+from .views.logs_view import LogsView
 from .views.menus_view import MenusView
 from .views.recipes_view import RecipesView
 from .views.shopping_list_view import ShoppingListView
@@ -10,18 +13,20 @@ from .views.shopping_list_view import ShoppingListView
 class AppLayout(ft.Row):
     """Application layout shell coordinating navigation and view containers."""
 
-    def __init__(self) -> None:
+    def __init__(self, container: Container) -> None:
         self._views = [
             RecipesView(),
             MenusView(),
             InventoryView(),
             ShoppingListView(),
+            LogsView(container.log_buffer),
         ]
         navigation_item_configs = [
             NavigationItemConfig(icon=ft.Icons.RESTAURANT_MENU, label="Recipes"),
             NavigationItemConfig(icon=ft.Icons.CALENDAR_MONTH, label="Menus"),
             NavigationItemConfig(icon=ft.Icons.INVENTORY_2, label="Inventory"),
             NavigationItemConfig(icon=ft.Icons.SHOPPING_CART, label="Shopping"),
+            NavigationItemConfig(icon=ft.Icons.TERMINAL, label="Logs"),
         ]
         self._sidebar = Sidebar(
             items=navigation_item_configs,

@@ -26,7 +26,7 @@ class ShoppingListService:
         self._recipe_search_service = recipe_search_service
         self._menu_search_service = menu_search_service
         self._inventory_search_service = inventory_search_service
-        logger.debug("ShoppingListService initialized.")
+        logger.debug("Initialized %s.", self.__class__.__name__)
 
     def generate_shopping_list(self, start_date: date, end_date: date) -> ShoppingList:
         validate_date_range(start_date, end_date)
@@ -51,6 +51,9 @@ class ShoppingListService:
                 )
 
         logger.info(
-            f"Generated shopping list with {len(shopping_items)} item(s) for period {start_date} to {end_date}."
+            "Generated shopping list with %d item(s) for period '%s' to '%s'.",
+            len(shopping_items),
+            start_date,
+            end_date,
         )
         return ShoppingList(items=shopping_items)

@@ -42,5 +42,5 @@ class JsonInventoryRepository(JsonBaseRepository[InventoryItem], InventoryReposi
         if inventory_item:
             logger.debug("Found entity with name '%s'.", name)
         else:
-            logger.debug("No entity found with name '%s'.", name)
+            logger.debug("Failed to find entity with name '%s'.", name)
         return inventory_item

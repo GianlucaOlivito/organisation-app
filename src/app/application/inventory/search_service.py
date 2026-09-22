@@ -13,16 +13,13 @@ class InventorySearchService:
 
     def __init__(self, inventory_repository: InventoryRepository) -> None:
         self._inventory_repository = inventory_repository
-        logger.debug("InventorySearchService initialized.")
+        logger.debug("Initialized %s.", self.__class__.__name__)
 
     def get_all(self) -> list[InventoryItem]:
-        logger.debug("Fetched all available inventory items.")
         return self._inventory_repository.get_all()
 
     def get_by_id(self, id: UUID) -> InventoryItem | None:
-        logger.debug(f"Fetched inventory item with ID {id}.")
         return self._inventory_repository.get_by_id(id)
 
     def get_by_name(self, name: str) -> InventoryItem | None:
-        logger.debug(f"Fetched inventory item with name {name}.")
         return self._inventory_repository.get_by_name(name)
