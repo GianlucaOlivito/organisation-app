@@ -1,8 +1,14 @@
 import asyncio
-from typing import Any, ClassVar
+from typing import Any
 
 import flet as ft
 
+from app.adapters.ui.components.common.controls import (
+    create_container,
+    create_delete_button,
+    create_text,
+)
+from app.adapters.ui.theme import theme
 from app.infrastructure.log_buffer import LogBuffer
 
 from .base_view import BaseView
@@ -12,29 +18,23 @@ class LogsView(BaseView):
     """Represents a view component for logs."""
 
     LEVELS: tuple[str, ...] = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
-    LEVEL_STYLES: ClassVar[dict[str, dict[str, Any]]] = {
-        "DEBUG": {"color": "#ADD8E6", "bgcolor": None},
-        "INFO": {"color": "#74E3A8", "bgcolor": None},
-        "WARNING": {"color": "#F5B742", "bgcolor": None},
-        "ERROR": {"color": "#E55A5A", "bgcolor": None},
-        "CRITICAL": {"color": "#FFFFFF", "bgcolor": "#C93737"},
-    }
 
     def __init__(self, log_buffer: LogBuffer) -> None:
         self._log_buffer = log_buffer
         self._enabled_levels = set(self.LEVELS)
         self._loop = None
-        self._logs = ft.ListView(expand=True, spacing=4, auto_scroll=True)
+        self._logs = ft.ListView(
+            expand=True, spacing=theme.spacing_small, auto_scroll=True
+        )
         self._filter = self._create_level_filter()
         super().__init__(title="Logs")
 
     def _build_log_line(self, level: str, message: str) -> ft.Text:
-        style = self.LEVEL_STYLES.get(level, self.LEVEL_STYLES["INFO"])
-        return ft.Text(
-            value=message,
+        style = theme.colors_log_levels.get(level, theme.colors_log_levels["INFO"])
+        return create_text(
+            message,
+            size=theme.font_size_small,
             selectable=True,
-            font_family="Consolas",
-            size=12,
             color=style["color"],
             bgcolor=style["bgcolor"],
         )
@@ -72,7 +72,10 @@ class LogsView(BaseView):
     def _create_level_filter(self) -> ft.SegmentedButton:
         return ft.SegmentedButton(
             segments=[
-                ft.Segment(value=level, label=ft.Text(level)) for level in self.LEVELS
+                ft.Segment(
+                    value=level, label=create_text(level, size=theme.font_size_small)
+                )
+                for level in self.LEVELS
             ],
             selected=list(self.LEVELS),
             allow_multiple_selection=True,
@@ -84,20 +87,14 @@ class LogsView(BaseView):
         toolbar = ft.Row(
             controls=[
                 self._filter,
-                ft.IconButton(
-                    icon=ft.Icons.DELETE_SWEEP,
-                    icon_color=ft.Colors.RED_300,
+                create_delete_button(
                     tooltip="Clear logs",
                     on_click=lambda _: self._log_buffer.clear(),
                 ),
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         )
-        log_container = ft.Container(
-            content=self._logs,
-            padding=16,
-            bgcolor="#121212",
-            border_radius=8,
-            expand=True,
+        log_container = create_container(
+            content=self._logs, bgcolor=theme.color_bg, expand=True
         )
         self.controls.extend([toolbar, log_container])
