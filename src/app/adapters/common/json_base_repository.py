@@ -34,7 +34,6 @@ class JsonBaseRepository[T](ABC):
                 items.append(self._dict_to_entity(item))
             except (KeyError, ValueError, TypeError) as e:
                 logger.error("Failed to deserialize entity '%s': %s", item, e)
-        logger.debug("Found %d entities.", len(items))
         return items
 
     def get_by_id(self, id: UUID) -> T | None:

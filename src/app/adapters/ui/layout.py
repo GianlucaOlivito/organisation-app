@@ -1,8 +1,13 @@
 import flet as ft
 
+from app.adapters.ui.components.common.controls import (
+    create_container,
+    create_vertical_divider,
+)
+from app.adapters.ui.theme import theme
 from app.infrastructure.container import Container
 
-from .components.sidebar import NavigationItemConfig, Sidebar
+from .components.common.sidebar import Sidebar
 from .views.inventory_view import InventoryView
 from .views.logs_view import LogsView
 from .views.menus_view import MenusView
@@ -15,37 +20,28 @@ class AppLayout(ft.Row):
 
     def __init__(self, container: Container) -> None:
         self._views = [
-            RecipesView(),
+            RecipesView(
+                container.recipe_modification_service,
+                container.recipe_search_service,
+            ),
             MenusView(),
             InventoryView(),
             ShoppingListView(),
             LogsView(container.log_buffer),
         ]
-        navigation_item_configs = [
-            NavigationItemConfig(icon=ft.Icons.RESTAURANT_MENU, label="Recipes"),
-            NavigationItemConfig(icon=ft.Icons.CALENDAR_MONTH, label="Menus"),
-            NavigationItemConfig(icon=ft.Icons.INVENTORY_2, label="Inventory"),
-            NavigationItemConfig(icon=ft.Icons.SHOPPING_CART, label="Shopping"),
-            NavigationItemConfig(icon=ft.Icons.TERMINAL, label="Logs"),
+        nav_items = [
+            (ft.Icons.RESTAURANT_MENU, "Recipes"),
+            (ft.Icons.CALENDAR_MONTH, "Menus"),
+            (ft.Icons.INVENTORY_2, "Inventory"),
+            (ft.Icons.SHOPPING_CART, "Shopping"),
+            (ft.Icons.TERMINAL, "Logs"),
         ]
-        self._sidebar = Sidebar(
-            items=navigation_item_configs,
-            selected_index=0,
-            on_change=self._switch_tab,
-        )
-        self._content_area = ft.Container(
-            content=self._views[0],
-            expand=True,
-            padding=20,
-        )
+        self._sidebar = Sidebar(items=nav_items, on_change=self._switch_tab)
+        self._content_area = create_container(content=self._views[0], expand=True)
         super().__init__(
             expand=True,
-            spacing=0,
-            controls=[
-                self._sidebar,
-                ft.VerticalDivider(width=1),
-                self._content_area,
-            ],
+            spacing=theme.spacing_none,
+            controls=[self._sidebar, create_vertical_divider(), self._content_area],
         )
 
     def _switch_tab(self, index: int) -> None:

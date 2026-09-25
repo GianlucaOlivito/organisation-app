@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 import flet as ft
 import pytest
 
+from app.adapters.ui.theme import theme
 from app.adapters.ui.views.logs_view import LogsView
 from app.infrastructure.log_buffer import LogBuffer
 
@@ -30,11 +31,11 @@ def test_build_log_line(logs_view):
 
     assert isinstance(text_control, ft.Text)
     assert text_control.value == "Something broke"
-    assert text_control.color == LogsView.LEVEL_STYLES["ERROR"]["color"]
+    assert text_control.color == theme.colors_log_levels["ERROR"]["color"]
 
     fallback_control = logs_view._build_log_line("UNKNOWN", "Test message")
 
-    assert fallback_control.color == LogsView.LEVEL_STYLES["INFO"]["color"]
+    assert fallback_control.color == theme.colors_log_levels["INFO"]["color"]
 
 
 def test_build_view(logs_view):

@@ -63,10 +63,11 @@ class JsonRecipeRepository(JsonBaseRepository[Recipe], RecipeRepository):
 
     def filter_by_ingredients(self, ingredients: list[str]) -> list[Recipe]:
         target_ingredients = {ing.strip().lower() for ing in ingredients if ing.strip()}
+        all_recipes = self.get_all()
         if not target_ingredients:
-            return self.get_all()
+            return all_recipes
         matching_recipes: list[Recipe] = []
-        for recipe in self.get_all():
+        for recipe in all_recipes:
             recipe_ingredient_names = {
                 ing.name.strip().lower() for ing in recipe.ingredients
             }
