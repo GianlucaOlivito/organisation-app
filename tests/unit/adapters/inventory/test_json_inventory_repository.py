@@ -122,14 +122,3 @@ def test_delete_removes_item(json_repo, sample_item, sample_item_2):
 
     assert len(items) == 1
     assert items[0].id == sample_item_2.id
-
-
-def test_delete_non_existent_item_logs_warning(json_repo, caplog):
-    non_existent_id = uuid4()
-    with caplog.at_level(logging.WARNING):
-        json_repo.delete(non_existent_id)
-
-    assert (
-        f"Attempted to delete non-existent entity with ID '{non_existent_id}'"
-        in caplog.text
-    )

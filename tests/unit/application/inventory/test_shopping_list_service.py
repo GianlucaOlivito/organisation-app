@@ -30,6 +30,7 @@ def test_generate_shopping_list_calculates_needed_ingredients(
     recipe = Recipe(
         name="Butter Chicken",
         ingredients=[RecipeIngredient(name="Butter", quantity=100.0, unit="g")],
+        instructions="Bake in the oven.",
     )
     fake_recipe_repo.save(recipe)
     menu = Menu(
@@ -74,6 +75,7 @@ def test_generate_shopping_list_returns_empty_when_stock_is_sufficient(
     recipe = Recipe(
         name="Oatmeal",
         ingredients=[RecipeIngredient(name="Oats", quantity=100.0, unit="g")],
+        instructions="Meal and enjoy.",
     )
     fake_recipe_repo.save(recipe)
     fake_menu_repo.save(
@@ -97,6 +99,7 @@ def test_generate_shopping_list_aggregates_same_ingredient_across_courses(
     recipe = Recipe(
         name="Omelette",
         ingredients=[RecipeIngredient(name="Egg", quantity=2.0, unit="pcs")],
+        instructions="Mix and fry.",
     )
     fake_recipe_repo.save(recipe)
     fake_menu_repo.save(

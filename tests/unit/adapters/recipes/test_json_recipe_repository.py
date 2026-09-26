@@ -66,8 +66,8 @@ def test_get_all_skips_invalid_recipe_entry(json_repo, tmp_path, caplog):
                 {
                     "id": "12345678-1234-5678-1234-567812345678",
                     "name": "Good Recipe",
-                    "ingredients": [],
-                    "instructions": "",
+                    "ingredients": [{"name": "Mehl", "quantity": 100.0, "unit": "g"}],
+                    "instructions": "Verrühren und backen.",
                 },
             ]
         ),
@@ -154,14 +154,3 @@ def test_delete_removes_recipe(json_repo, sample_recipe, sample_recipe_2):
 
     assert len(recipes) == 1
     assert recipes[0].id == sample_recipe_2.id
-
-
-def test_delete_non_existent_recipe_logs_warning(json_repo, caplog):
-    non_existent_id = uuid4()
-    with caplog.at_level(logging.WARNING):
-        json_repo.delete(non_existent_id)
-
-    assert (
-        f"Attempted to delete non-existent entity with ID '{non_existent_id}'"
-        in caplog.text
-    )

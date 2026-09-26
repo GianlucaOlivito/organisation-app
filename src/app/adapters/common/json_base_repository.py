@@ -38,10 +38,6 @@ class JsonBaseRepository[T](ABC):
 
     def get_by_id(self, id: UUID) -> T | None:
         entity = next((item for item in self.get_all() if item.id == id), None)
-        if entity:
-            logger.debug("Found entity with ID '%s'.", id)
-        else:
-            logger.debug("Failed to find entity with ID '%s'.", id)
         return entity
 
     def save(self, entity: T) -> None:
@@ -56,7 +52,6 @@ class JsonBaseRepository[T](ABC):
             items.append(entity)
         serialized = [self._entity_to_dict(item) for item in items]
         write_json_file(self._file_path, serialized)
-        logger.debug("Saved entity with ID '%s'.", entity.id)
 
     def delete(self, id: UUID) -> None:
         items = self.get_all()
@@ -64,6 +59,3 @@ class JsonBaseRepository[T](ABC):
         if len(filtered) != len(items):
             serialized = [self._entity_to_dict(item) for item in filtered]
             write_json_file(self._file_path, serialized)
-            logger.debug("Deleted entity with ID '%s'.", id)
-        else:
-            logger.warning("Attempted to delete non-existent entity with ID '%s'.", id)

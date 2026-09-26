@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def main() -> None:
     container = create_container()
     app = App(container)
-    logger.info("Launching application UI...")
+    logger.info("Launched application UI.")
     ft.run(app.__call__, assets_dir=str(container.settings.assets_dir))
     logger.info("Application shut down.")
 

@@ -58,6 +58,7 @@ def test_consume_meals_for_period_deducts_stock_flooring_at_zero(
     recipe = Recipe(
         name="Fondue",
         ingredients=[RecipeIngredient(name="Cheese", quantity=150.0, unit="g")],
+        instructions="Melt and enjoy.",
     )
     fake_recipe_repo.save(recipe)
     menu = Menu(
@@ -100,6 +101,7 @@ def test_consume_meals_ignores_ingredients_not_present_in_inventory(
     recipe = Recipe(
         name="Tea",
         ingredients=[RecipeIngredient(name="Tea Bag", quantity=1.0, unit="pcs")],
+        instructions="Boil and let cool down.",
     )
     fake_recipe_repo.save(recipe)
     fake_menu_repo.save(

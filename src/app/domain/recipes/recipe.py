@@ -10,5 +10,15 @@ class Recipe:
 
     id: UUID = field(default_factory=uuid4)
     name: str
-    ingredients: list[RecipeIngredient] = field(default_factory=list)
-    instructions: str = ""
+    ingredients: list[RecipeIngredient]
+    instructions: str
+
+    def __post_init__(self) -> None:
+        if not (self.name or "").strip():
+            raise ValueError("Ungültiger Rezeptname")
+        if not self.ingredients:
+            raise ValueError("Ungültige Zutatenliste")
+        if not (self.instructions or "").strip():
+            raise ValueError("Ungültige Zubereitung")
+        self.name = self.name.strip()
+        self.instructions = self.instructions.strip()
