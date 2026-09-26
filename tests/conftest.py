@@ -38,6 +38,11 @@ def fake_inventory_repo() -> FakeInventoryRepository:
 
 
 @pytest.fixture
+def sample_ingredient() -> RecipeIngredient:
+    return RecipeIngredient(name="Milk", quantity=250.0, unit="ml")
+
+
+@pytest.fixture
 def sample_recipes(fake_recipe_repo: FakeRecipeRepository) -> list[Recipe]:
     recipe1 = Recipe(
         name="Spaghetti Carbonara",
@@ -46,6 +51,7 @@ def sample_recipes(fake_recipe_repo: FakeRecipeRepository) -> list[Recipe]:
             RecipeIngredient(name="Eggs", quantity=2.0, unit=""),
             RecipeIngredient(name="Guanciale", quantity=100.0, unit="g"),
         ],
+        instructions="Mix and fry.",
     )
     recipe2 = Recipe(
         name="Tomato Soup",
@@ -53,6 +59,7 @@ def sample_recipes(fake_recipe_repo: FakeRecipeRepository) -> list[Recipe]:
             RecipeIngredient(name="Tomato", quantity=500.0, unit="g"),
             RecipeIngredient(name="Garlic", quantity=2.0, unit="cloves"),
         ],
+        instructions="Mix and fry.",
     )
     fake_recipe_repo.save(recipe1)
     fake_recipe_repo.save(recipe2)

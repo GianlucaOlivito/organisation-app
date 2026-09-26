@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from typing import Any
 from uuid import UUID
@@ -7,8 +6,6 @@ from app.adapters.common.json_base_repository import JsonBaseRepository
 from app.application.inventory.repository import InventoryRepository
 from app.config.settings import settings
 from app.domain.inventory.inventory_item import InventoryItem
-
-logger = logging.getLogger(__name__)
 
 
 class JsonInventoryRepository(JsonBaseRepository[InventoryItem], InventoryRepository):
@@ -39,8 +36,4 @@ class JsonInventoryRepository(JsonBaseRepository[InventoryItem], InventoryReposi
             (i for i in self.get_all() if i.name.strip().lower() == normalized_name),
             None,
         )
-        if inventory_item:
-            logger.debug("Found entity with name '%s'.", name)
-        else:
-            logger.debug("Failed to find entity with name '%s'.", name)
         return inventory_item

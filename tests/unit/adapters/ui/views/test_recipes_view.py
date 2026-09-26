@@ -1,7 +1,10 @@
+from unittest.mock import MagicMock
+
 import flet as ft
 import pytest
 
 from app.adapters.ui.components.recipes.recipe_card import RecipeCard
+from app.adapters.ui.components.recipes.recipe_form import RecipeForm
 from app.adapters.ui.views.recipes_view import RecipesView
 from app.application.recipes.modification_service import RecipeModificationService
 from app.application.recipes.search_service import RecipeSearchService
@@ -14,10 +17,12 @@ def recipes_view(
     recipes_search_service: RecipeSearchService,
     sample_recipes: list[Recipe],
 ) -> RecipesView:
-    return RecipesView(
+    view = RecipesView(
         modification_service=recipes_modification_service,
         search_service=recipes_search_service,
     )
+    view.update = MagicMock()
+    return view
 
 
 def test_initialization_renders_sample_recipes(recipes_view, sample_recipes):
@@ -62,8 +67,45 @@ def test_toolbar_structure(recipes_view):
     toolbar = recipes_view.controls[2]
 
     assert isinstance(toolbar, ft.Row)
-    assert len(toolbar.controls) == 4
-    assert toolbar.controls[0] == recipes_view._search_button
-    assert toolbar.controls[1] == recipes_view._search_input
-    assert toolbar.controls[2] == recipes_view._filter_button
-    assert toolbar.controls[3] == recipes_view._ingredient_input
+    assert len(toolbar.controls) == 5
+    assert toolbar.controls[0] == recipes_view._add_button
+    assert toolbar.controls[1] == recipes_view._search_button
+    assert toolbar.controls[2] == recipes_view._search_input
+    assert toolbar.controls[3] == recipes_view._filter_button
+    assert toolbar.controls[4] == recipes_view._ingredient_input
+
+
+def test_open_form_for_creation(recipes_view):
+    recipes_view._open_form()
+
+    assert recipes_view._toolbar.visible is False
+    assert len(recipes_view._content_container.controls) == 1
+
+    form = recipes_view._content_container.controls[0]
+
+    assert isinstance(form, RecipeForm)
+    assert form._recipe_id is not None
+
+
+def test_open_form_for_editing(recipes_view, sample_recipes):
+    recipe_to_edit = sample_recipes[0]
+    recipes_view._open_form(recipe_to_edit)
+
+    assert recipes_view._toolbar.visible is False
+    assert len(recipes_view._content_container.controls) == 1
+
+    form = recipes_view._content_container.controls[0]
+
+    assert isinstance(form, RecipeForm)
+    assert form._recipe_id == recipe_to_edit.id
+
+
+def test_delete_recipe(recipes_view, sample_recipes):
+    recipe_to_delete = sample_recipes[0]
+    initial_count = len(recipes_view._grid.controls)
+    recipes_view._delete_recipe(recipe_to_delete.id)
+
+    assert len(recipes_view._grid.controls) == initial_count - 1
+    assert all(
+        card.recipe.id != recipe_to_delete.id for card in recipes_view._grid.controls
+    )

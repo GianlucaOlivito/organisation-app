@@ -1,13 +1,17 @@
 import flet as ft
 
 from app.adapters.ui.components.common.controls import (
+    create_add_button,
+    create_close_button,
     create_container,
     create_delete_button,
     create_divider,
+    create_edit_button,
     create_filter_button,
     create_header,
     create_icon_button,
     create_muted_text,
+    create_save_button,
     create_search_button,
     create_text,
     create_text_field,
@@ -103,6 +107,38 @@ def test_create_filter_button():
     assert isinstance(btn, ft.IconButton)
     assert btn.icon == ft.Icons.FILTER_ALT
     assert btn.icon_color == theme.color_active
+
+
+def test_create_add_button():
+    btn = create_add_button()
+
+    assert isinstance(btn, ft.IconButton)
+    assert btn.icon == ft.Icons.ADD
+    assert btn.icon_color == theme.color_active
+
+
+def test_create_edit_button():
+    btn = create_edit_button()
+
+    assert isinstance(btn, ft.IconButton)
+    assert btn.icon == ft.Icons.EDIT
+    assert btn.icon_color == theme.color_active
+
+
+def test_create_save_button():
+    btn = create_save_button()
+
+    assert isinstance(btn, ft.IconButton)
+    assert btn.icon == ft.Icons.SAVE
+    assert btn.icon_color == theme.color_active
+
+
+def test_create_close_button():
+    btn = create_close_button()
+
+    assert isinstance(btn, ft.IconButton)
+    assert btn.icon == ft.Icons.CLOSE
+    assert btn.icon_color == theme.color_inactive
 
 
 def test_create_delete_button():

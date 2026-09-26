@@ -1,4 +1,3 @@
-import logging
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -9,8 +8,6 @@ from app.application.meal_planning.repository import MenuRepository
 from app.config.settings import settings
 from app.domain.meal_planning.course import Course
 from app.domain.meal_planning.menu import Menu
-
-logger = logging.getLogger(__name__)
 
 
 class JsonMenuRepository(JsonBaseRepository[Menu], MenuRepository):
@@ -53,10 +50,4 @@ class JsonMenuRepository(JsonBaseRepository[Menu], MenuRepository):
         for menu in self.get_all():
             if start_date <= menu.scheduled_date <= end_date:
                 matching_menus.append(menu)
-        logger.debug(
-            "Found %d menus between '%s' and '%s'.",
-            len(matching_menus),
-            start_date,
-            end_date,
-        )
         return matching_menus

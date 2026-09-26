@@ -6,8 +6,12 @@ import pytest
 from app.domain.recipes.recipe import Recipe
 
 
-def test_create_recipe_success(recipes_modification_service, fake_recipe_repo):
-    recipe = Recipe(name="Pancakes")
+def test_create_recipe_success(
+    recipes_modification_service, fake_recipe_repo, sample_ingredient
+):
+    recipe = Recipe(
+        name="Pancakes", ingredients=[sample_ingredient], instructions="Mix and fry."
+    )
     created_recipe = recipes_modification_service.create(recipe)
 
     assert created_recipe == recipe
@@ -37,8 +41,14 @@ def test_modify_recipe_success(
     assert saved_recipe.name == "Spaghetti Carbonara Extra Cheese"
 
 
-def test_modify_recipe_not_found_raises_error(recipes_modification_service):
-    unregistered_recipe = Recipe(name="Unsaved Dish")
+def test_modify_recipe_not_found_raises_error(
+    recipes_modification_service, sample_ingredient
+):
+    unregistered_recipe = Recipe(
+        name="Unsaved Dish",
+        ingredients=[sample_ingredient],
+        instructions="Mix and fry.",
+    )
 
     with pytest.raises(
         ValueError,

@@ -16,12 +16,12 @@ def test_calculate_menu_ingredients_aggregates_quantities_correctly():
             RecipeIngredient(name="Pasta", quantity=100.0, unit="g"),
             RecipeIngredient(name="Tomato Sauce", quantity=50.0, unit="g"),
         ],
+        instructions="Boil and enjoy.",
     )
     recipe_2 = Recipe(
         name="Salad",
-        ingredients=[
-            RecipeIngredient(name="Tomato Sauce", quantity=20.0, unit="g"),
-        ],
+        ingredients=[RecipeIngredient(name="Tomato Sauce", quantity=20.0, unit="g")],
+        instructions="Mix and boil.",
     )
     recipe_search_service = MagicMock()
     recipe_search_service.get_by_id.side_effect = lambda r_id: {

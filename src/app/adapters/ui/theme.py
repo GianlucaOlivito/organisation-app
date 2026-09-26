@@ -16,8 +16,11 @@ class Theme:
     divider_width: int = 1
     border_radius_medium: int = 8
     sidebar_width: int = 100
+    container_height_medium: int = 200
     grid_max_extent: int = 400
     grid_aspect_ratio: float = 1.0
+    input_field_min_lines: int = 5
+    input_field_max_lines: int = 10
     font_family: str = "Consolas"
     font_size_xl: int = 24
     font_size_large: int = 20

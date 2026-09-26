@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from typing import Any
 from uuid import UUID
@@ -8,8 +7,6 @@ from app.application.recipes.repository import RecipeRepository
 from app.config.settings import settings
 from app.domain.recipes.recipe import Recipe
 from app.domain.recipes.recipe_ingredient import RecipeIngredient
-
-logger = logging.getLogger(__name__)
 
 
 class JsonRecipeRepository(JsonBaseRepository[Recipe], RecipeRepository):
@@ -55,10 +52,6 @@ class JsonRecipeRepository(JsonBaseRepository[Recipe], RecipeRepository):
             (r for r in self.get_all() if r.name.strip().lower() == normalized_name),
             None,
         )
-        if recipe:
-            logger.debug("Found entity with name '%s'.", name)
-        else:
-            logger.debug("Failed to find entity with name '%s'.", name)
         return recipe
 
     def filter_by_ingredients(self, ingredients: list[str]) -> list[Recipe]:
@@ -73,10 +66,4 @@ class JsonRecipeRepository(JsonBaseRepository[Recipe], RecipeRepository):
             }
             if target_ingredients.issubset(recipe_ingredient_names):
                 matching_recipes.append(recipe)
-        ingredients_str = ", ".join(sorted(target_ingredients))
-        logger.debug(
-            "Found %d recipes matching ingredients '%s'.",
-            len(matching_recipes),
-            ingredients_str,
-        )
         return matching_recipes

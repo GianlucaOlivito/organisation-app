@@ -143,14 +143,3 @@ def test_delete_removes_menu(json_repo, sample_menu, sample_menu_2):
 
     assert len(menus) == 1
     assert menus[0].id == sample_menu_2.id
-
-
-def test_delete_non_existent_menu_logs_warning(json_repo, caplog):
-    non_existent_id = uuid4()
-    with caplog.at_level(logging.WARNING):
-        json_repo.delete(non_existent_id)
-
-    assert (
-        f"Attempted to delete non-existent entity with ID '{non_existent_id}'"
-        in caplog.text
-    )

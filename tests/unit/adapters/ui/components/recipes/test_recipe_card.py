@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import flet as ft
 import pytest
@@ -44,7 +44,9 @@ def test_recipe_card_renders_full_data(sample_recipe):
     header_row = column.controls[0]
 
     assert header_row.controls[0].value == "Spaghetti Carbonara"
-    assert header_row.controls[1].value == f"ID: {str(sample_recipe.id)[:8]}"
+    assert (
+        header_row.controls[1].controls[0].value == f"ID: {str(sample_recipe.id)[:8]}"
+    )
 
     ing_section = column.controls[2]
 
@@ -63,26 +65,27 @@ def test_recipe_card_renders_full_data(sample_recipe):
     )
 
 
-def test_recipe_card_renders_fallbacks_for_empty_fields():
-    empty_recipe = Recipe(
-        id=uuid4(),
-        name="   ",
-        ingredients=[],
-        instructions="",
-    )
-    card = RecipeCard(empty_recipe)
-    column = card.content.content
-    header_row = column.controls[0]
+def test_recipe_card_callback_triggers(sample_recipe):
+    edited_recipe = None
+    deleted_id = None
 
-    assert header_row.controls[0].value == "Kein Name hinterlegt"
-    assert header_row.controls[0].italic is True
+    def on_edit(r: Recipe) -> None:
+        nonlocal edited_recipe
+        edited_recipe = r
 
-    ing_section = column.controls[2]
+    def on_delete(rid: UUID) -> None:
+        nonlocal deleted_id
+        deleted_id = rid
 
-    assert ing_section.controls[1].value == "Keine Zutaten hinterlegt"
-    assert ing_section.controls[1].italic is True
+    card = RecipeCard(sample_recipe, on_edit=on_edit, on_delete=on_delete)
+    header_row = card.content.content.controls[0]
+    action_row = header_row.controls[1]
+    edit_btn = action_row.controls[1]
+    delete_btn = action_row.controls[2]
+    edit_btn.on_click(None)
 
-    inst_section = column.controls[4]
+    assert edited_recipe == sample_recipe
 
-    assert inst_section.controls[1].value == "Keine Zubereitung hinterlegt"
-    assert inst_section.controls[1].italic is True
+    delete_btn.on_click(None)
+
+    assert deleted_id == sample_recipe.id

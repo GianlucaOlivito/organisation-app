@@ -18,7 +18,9 @@ def calculate_menu_ingredients(
             recipe = recipe_search_service.get_by_id(course.recipe_id)
             if recipe is None:
                 logger.warning(
-                    f"Recipe with ID '{course.recipe_id}' referenced in menu '{menu.id}' not found."
+                    "Found no recipe with ID '%s' referenced in menu '%s'.",
+                    course.recipe_id,
+                    menu.id,
                 )
                 continue
             for ingredient in recipe.ingredients:
