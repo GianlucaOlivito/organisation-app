@@ -63,6 +63,25 @@ def create_filter_button(**kwargs) -> ft.IconButton:
     return create_icon_button(icon=ft.Icons.FILTER_ALT, **kwargs)
 
 
+def create_add_button(**kwargs) -> ft.IconButton:
+    kwargs.setdefault("icon_color", theme.color_active)
+    return create_icon_button(icon=ft.Icons.ADD, **kwargs)
+
+
+def create_edit_button(**kwargs) -> ft.IconButton:
+    kwargs.setdefault("icon_color", theme.color_active)
+    return create_icon_button(icon=ft.Icons.EDIT, **kwargs)
+
+
+def create_save_button(**kwargs) -> ft.IconButton:
+    kwargs.setdefault("icon_color", theme.color_active)
+    return create_icon_button(icon=ft.Icons.SAVE, **kwargs)
+
+
+def create_close_button(**kwargs) -> ft.IconButton:
+    return create_icon_button(icon=ft.Icons.CLOSE, **kwargs)
+
+
 def create_delete_button(**kwargs) -> ft.IconButton:
     kwargs.setdefault("icon_color", theme.color_danger)
     return create_icon_button(icon=ft.Icons.DELETE_SWEEP, **kwargs)
