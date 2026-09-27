@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 
 
@@ -6,11 +7,19 @@ class ShoppingListItem:
     """Represents an item on a shopping list."""
 
     name: str
-    quantity: float
+    quantity: float | str
     unit: str
 
     def __post_init__(self) -> None:
-        if self.quantity <= 0:
-            raise ValueError("INVALID ARGUMENT: Item quantity must be positive.")
-        if not self.name.strip():
-            raise ValueError("INVALID ARGUMENT: Item name cannot be empty.")
+        if not (self.name or "").strip():
+            raise ValueError("Ungültiger Name")
+        try:
+            raw_qty = str(self.quantity).replace(",", ".")
+            qty = float(raw_qty)
+        except TypeError, ValueError:
+            raise ValueError("Ungültige Menge")
+        if math.isnan(qty) or math.isinf(qty) or qty <= 0:
+            raise ValueError("Ungültige Menge")
+        object.__setattr__(self, "name", self.name.strip())
+        object.__setattr__(self, "quantity", qty)
+        object.__setattr__(self, "unit", (self.unit or "").strip())

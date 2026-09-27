@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass, field
 from uuid import UUID, uuid4
 
@@ -8,11 +9,19 @@ class InventoryItem:
 
     id: UUID = field(default_factory=uuid4)
     name: str
-    quantity: float
+    quantity: float | str
     unit: str
 
     def __post_init__(self) -> None:
-        if self.quantity < 0:
-            raise ValueError("INVALID ARGUMENT: Item quantity cannot be negative.")
-        if not self.name.strip():
-            raise ValueError("INVALID ARGUMENT: Item name cannot be empty.")
+        if not (self.name or "").strip():
+            raise ValueError("Ungültiger Name")
+        try:
+            raw_qty = str(self.quantity).replace(",", ".")
+            qty = float(raw_qty)
+        except TypeError, ValueError:
+            raise ValueError("Ungültige Menge")
+        if math.isnan(qty) or math.isinf(qty) or qty < 0:
+            raise ValueError("Ungültige Menge")
+        self.name = self.name.strip()
+        self.quantity = qty
+        self.unit = (self.unit or "").strip()

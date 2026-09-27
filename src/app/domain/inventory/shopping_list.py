@@ -10,3 +10,7 @@ class ShoppingList:
 
     id: UUID = field(default_factory=uuid4)
     items: list[ShoppingListItem] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        if not self.items:
+            raise ValueError("Ungültige Einkaufsliste")
