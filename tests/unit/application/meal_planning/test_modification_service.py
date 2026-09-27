@@ -4,11 +4,13 @@ from uuid import uuid4
 
 import pytest
 
+from app.domain.meal_planning.course import Course
 from app.domain.meal_planning.menu import Menu
 
 
 def test_create_menu_success(meal_planning_modification_service, fake_menu_repo):
-    menu = Menu(scheduled_date=date(2026, 8, 30), description="Lunch", courses=[])
+    course = Course(recipe_id=uuid4(), portions=1)
+    menu = Menu(scheduled_date=date(2026, 8, 30), description="Lunch", courses=[course])
     created_menu = meal_planning_modification_service.create(menu)
 
     assert created_menu == menu
@@ -40,13 +42,16 @@ def test_modify_menu_success(
 
 
 def test_modify_menu_not_found_raises_error(meal_planning_modification_service):
-    unregistered_menu = Menu(scheduled_date=date(2026, 8, 30), description="Unsaved")
+    course = Course(recipe_id=uuid4(), portions=1)
+    menu = Menu(
+        scheduled_date=date(2026, 8, 30), description="Unsaved", courses=[course]
+    )
 
     with pytest.raises(
         ValueError,
-        match=f"INVALID ARGUMENT: Menu with ID '{unregistered_menu.id}' does not exist.",
+        match=f"INVALID ARGUMENT: Menu with ID '{menu.id}' does not exist.",
     ):
-        meal_planning_modification_service.modify(unregistered_menu)
+        meal_planning_modification_service.modify(menu)
 
 
 def test_delete_menu_success(

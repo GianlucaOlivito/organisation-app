@@ -1,25 +1,10 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import flet as ft
-import pytest
 
 from app.adapters.ui.components.recipes.recipe_card import RecipeCard
 from app.domain.recipes.recipe import Recipe
 from app.domain.recipes.recipe_ingredient import RecipeIngredient
-
-
-@pytest.fixture
-def sample_recipe() -> Recipe:
-    return Recipe(
-        id=uuid4(),
-        name="Spaghetti Carbonara",
-        ingredients=[
-            RecipeIngredient(name="Spaghetti", quantity=200.0, unit="g"),
-            RecipeIngredient(name="Eier", quantity=2.0, unit=""),
-            RecipeIngredient(name="Pecorino", quantity=50.5, unit="g"),
-        ],
-        instructions="Nudeln kochen. Eier und Käse verquirlen und unterheben.",
-    )
 
 
 def test_format_ingredient_quantities_and_units():
@@ -32,8 +17,9 @@ def test_format_ingredient_quantities_and_units():
     assert RecipeCard._format_ingredient(ing_decimal) == "• 1.5 l Milch"
 
 
-def test_recipe_card_renders_full_data(sample_recipe):
-    card = RecipeCard(sample_recipe)
+def test_recipe_card_renders_full_data(sample_recipes):
+    recipe = sample_recipes[0]
+    card = RecipeCard(recipe)
 
     assert isinstance(card, ft.Card)
 
@@ -43,29 +29,26 @@ def test_recipe_card_renders_full_data(sample_recipe):
 
     header_row = column.controls[0]
 
-    assert header_row.controls[0].value == "Spaghetti Carbonara"
-    assert (
-        header_row.controls[1].controls[0].value == f"ID: {str(sample_recipe.id)[:8]}"
-    )
+    assert header_row.controls[0].value == recipe.name
+    assert header_row.controls[1].controls[0].value == f"ID: {str(recipe.id)[:8]}"
 
     ing_section = column.controls[2]
 
     assert ing_section.controls[0].value == "Zutaten"
-    assert len(ing_section.controls) == 4
-    assert ing_section.controls[1].value == "• 200 g Spaghetti"
-    assert ing_section.controls[2].value == "• 2 Eier"
-    assert ing_section.controls[3].value == "• 50.5 g Pecorino"
+    assert len(ing_section.controls) == len(recipe.ingredients) + 1
+    for i, ingredient in enumerate(recipe.ingredients):
+        assert ing_section.controls[i + 1].value == RecipeCard._format_ingredient(
+            ingredient
+        )
 
     inst_section = column.controls[4]
 
     assert inst_section.controls[0].value == "Zubereitung"
-    assert (
-        inst_section.controls[1].value
-        == "Nudeln kochen. Eier und Käse verquirlen und unterheben."
-    )
+    assert inst_section.controls[1].value == recipe.instructions
 
 
-def test_recipe_card_callback_triggers(sample_recipe):
+def test_recipe_card_callback_triggers(sample_recipes):
+    recipe = sample_recipes[0]
     edited_recipe = None
     deleted_id = None
 
@@ -77,15 +60,15 @@ def test_recipe_card_callback_triggers(sample_recipe):
         nonlocal deleted_id
         deleted_id = rid
 
-    card = RecipeCard(sample_recipe, on_edit=on_edit, on_delete=on_delete)
+    card = RecipeCard(recipe, on_edit=on_edit, on_delete=on_delete)
     header_row = card.content.content.controls[0]
     action_row = header_row.controls[1]
     edit_btn = action_row.controls[1]
     delete_btn = action_row.controls[2]
     edit_btn.on_click(None)
 
-    assert edited_recipe == sample_recipe
+    assert edited_recipe == recipe
 
     delete_btn.on_click(None)
 
-    assert deleted_id == sample_recipe.id
+    assert deleted_id == recipe.id

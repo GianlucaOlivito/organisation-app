@@ -1,17 +1,8 @@
 from unittest.mock import MagicMock
 
 import flet as ft
-import pytest
 
-from app.adapters.ui.components.recipes.recipe_form import RecipeForm
 from app.domain.recipes.recipe import Recipe
-
-
-@pytest.fixture
-def recipe_form() -> RecipeForm:
-    form = RecipeForm()
-    form.update = MagicMock()
-    return form
 
 
 def test_initialization_creation_mode(recipe_form):
@@ -21,17 +12,19 @@ def test_initialization_creation_mode(recipe_form):
     assert len(recipe_form._ingredients_column.controls) == 1
 
 
-def test_initialization_edit_mode(sample_recipes: list[Recipe]):
+def test_initialization_edit_mode(sample_recipes, recipe_form):
     recipe_to_edit = sample_recipes[0]
-    form = RecipeForm(recipe=recipe_to_edit)
-    form.update = MagicMock()
+    recipe_form.__init__(recipe=recipe_to_edit)
+    recipe_form.update = MagicMock()
 
-    assert form._recipe_id == recipe_to_edit.id
-    assert form._name_field.value == recipe_to_edit.name
-    assert form._instructions_field.value == recipe_to_edit.instructions
-    assert len(form._ingredients_column.controls) == len(recipe_to_edit.ingredients)
+    assert recipe_form._recipe_id == recipe_to_edit.id
+    assert recipe_form._name_field.value == recipe_to_edit.name
+    assert recipe_form._instructions_field.value == recipe_to_edit.instructions
+    assert len(recipe_form._ingredients_column.controls) == len(
+        recipe_to_edit.ingredients
+    )
 
-    first_row = form._ingredients_column.controls[0]
+    first_row = recipe_form._ingredients_column.controls[0]
 
     assert first_row.controls[0].value == "Pasta"
     assert first_row.controls[1].value == "200.0"

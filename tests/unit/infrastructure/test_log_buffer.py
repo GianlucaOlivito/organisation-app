@@ -1,13 +1,6 @@
 from unittest.mock import MagicMock
 
-import pytest
-
 from app.infrastructure.log_buffer import LogBuffer
-
-
-@pytest.fixture
-def log_buffer() -> LogBuffer:
-    return LogBuffer(maxlen=3)
 
 
 def test_append_and_take_snapshot(log_buffer):
@@ -27,12 +20,13 @@ def test_snapshot_returns_copy(log_buffer):
     assert len(log_buffer.take_snapshot()) == 1
 
 
-def test_capacity_eviction(log_buffer):
-    log_buffer.append("INFO", "Log 1")
-    log_buffer.append("INFO", "Log 2")
-    log_buffer.append("INFO", "Log 3")
-    log_buffer.append("INFO", "Log 4")
-    snapshot = log_buffer.take_snapshot()
+def test_capacity_eviction():
+    buffer = LogBuffer(maxlen=3)
+    buffer.append("INFO", "Log 1")
+    buffer.append("INFO", "Log 2")
+    buffer.append("INFO", "Log 3")
+    buffer.append("INFO", "Log 4")
+    snapshot = buffer.take_snapshot()
 
     assert len(snapshot) == 3
     assert snapshot[0] == ("INFO", "Log 2")

@@ -1,31 +1,12 @@
 import logging
 from unittest.mock import patch
 
-import pytest
-
-from app.infrastructure.log_buffer import LogBuffer
 from app.infrastructure.logging_setup import (
     AppFilter,
     CustomLogFormatter,
     MemoryLogHandler,
     setup_logging,
 )
-
-
-@pytest.fixture
-def log_buffer() -> LogBuffer:
-    return LogBuffer(1000)
-
-
-@pytest.fixture
-def clean_root_logger():
-    logger = logging.getLogger()
-    original_handlers = logger.handlers[:]
-    logger.handlers.clear()
-    yield logger
-    for handler in logger.handlers:
-        handler.close()
-    logger.handlers = original_handlers
 
 
 def test_app_filter_accepts_allowed_namespaces():
