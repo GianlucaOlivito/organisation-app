@@ -1,28 +1,7 @@
-from unittest.mock import MagicMock
-
 import flet as ft
-import pytest
 
 from app.adapters.ui.components.recipes.recipe_card import RecipeCard
 from app.adapters.ui.components.recipes.recipe_form import RecipeForm
-from app.adapters.ui.views.recipes_view import RecipesView
-from app.application.recipes.modification_service import RecipeModificationService
-from app.application.recipes.search_service import RecipeSearchService
-from app.domain.recipes.recipe import Recipe
-
-
-@pytest.fixture
-def recipes_view(
-    recipes_modification_service: RecipeModificationService,
-    recipes_search_service: RecipeSearchService,
-    sample_recipes: list[Recipe],
-) -> RecipesView:
-    view = RecipesView(
-        modification_service=recipes_modification_service,
-        search_service=recipes_search_service,
-    )
-    view.update = MagicMock()
-    return view
 
 
 def test_initialization_renders_sample_recipes(recipes_view, sample_recipes):

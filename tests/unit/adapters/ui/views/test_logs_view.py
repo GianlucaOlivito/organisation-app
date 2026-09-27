@@ -6,17 +6,6 @@ import pytest
 
 from app.adapters.ui.theme import theme
 from app.adapters.ui.views.logs_view import LogsView
-from app.infrastructure.log_buffer import LogBuffer
-
-
-@pytest.fixture
-def log_buffer() -> LogBuffer:
-    return LogBuffer(maxlen=100)
-
-
-@pytest.fixture
-def logs_view(log_buffer: LogBuffer) -> LogsView:
-    return LogsView(log_buffer=log_buffer)
 
 
 def test_initialization(logs_view):

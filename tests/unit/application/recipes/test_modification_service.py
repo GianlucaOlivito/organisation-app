@@ -70,6 +70,7 @@ def test_delete_recipe_not_found_raises_error(recipes_modification_service):
     random_id = uuid4()
 
     with pytest.raises(
-        ValueError, match=f"Recipe with ID '{random_id}' does not exist"
+        ValueError,
+        match=f"INVALID ARGUMENT: Recipe with ID '{random_id}' does not exist.",
     ):
         recipes_modification_service.delete(random_id)

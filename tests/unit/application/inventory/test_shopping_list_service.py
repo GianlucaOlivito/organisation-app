@@ -51,19 +51,29 @@ def test_generate_shopping_list_calculates_needed_ingredients(
 
 
 def test_generate_shopping_list_skips_missing_recipes(
-    inventory_shopping_list_service, fake_menu_repo
+    inventory_shopping_list_service, fake_menu_repo, fake_recipe_repo
 ):
+    valid_recipe = Recipe(
+        name="Milkshake",
+        ingredients=[RecipeIngredient(name="Milk", quantity=1.0, unit="l")],
+        instructions="Blend well.",
+    )
+    fake_recipe_repo.save(valid_recipe)
     menu = Menu(
         description="Dinner",
         scheduled_date=date(2026, 9, 1),
-        courses=[Course(recipe_id=uuid4(), portions=1)],
+        courses=[
+            Course(recipe_id=uuid4(), portions=1),
+            Course(recipe_id=valid_recipe.id, portions=1),
+        ],
     )
     fake_menu_repo.save(menu)
     result = inventory_shopping_list_service.generate_shopping_list(
         date(2026, 9, 1), date(2026, 9, 7)
     )
 
-    assert result.items == []
+    assert len(result.items) == 1
+    assert result.items[0].name == "Milk"
 
 
 def test_generate_shopping_list_returns_empty_when_stock_is_sufficient(
@@ -73,8 +83,11 @@ def test_generate_shopping_list_returns_empty_when_stock_is_sufficient(
     fake_inventory_repo,
 ):
     recipe = Recipe(
-        name="Oatmeal",
-        ingredients=[RecipeIngredient(name="Oats", quantity=100.0, unit="g")],
+        name="Oatmeal with Berries",
+        ingredients=[
+            RecipeIngredient(name="Oats", quantity=100.0, unit="g"),
+            RecipeIngredient(name="Berries", quantity=50.0, unit="g"),
+        ],
         instructions="Meal and enjoy.",
     )
     fake_recipe_repo.save(recipe)
@@ -90,7 +103,9 @@ def test_generate_shopping_list_returns_empty_when_stock_is_sufficient(
         date(2026, 9, 1), date(2026, 9, 2)
     )
 
-    assert result.items == []
+    assert len(result.items) == 1
+    assert result.items[0].name == "Berries"
+    assert result.items[0].quantity == 50.0
 
 
 def test_generate_shopping_list_aggregates_same_ingredient_across_courses(

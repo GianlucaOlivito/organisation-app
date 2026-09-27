@@ -33,8 +33,8 @@ def test_calculate_menu_ingredients_aggregates_quantities_correctly():
             scheduled_date=date(2026, 1, 1),
             description="Dinner",
             courses=[
-                Course(recipe_id=recipe_1.id, portions=2),  # Pasta: 200g, Sauce: 100g
-                Course(recipe_id=recipe_2.id, portions=1),  # Sauce: 20g
+                Course(recipe_id=recipe_1.id, portions=2),
+                Course(recipe_id=recipe_2.id, portions=1),
             ],
         )
     ]
