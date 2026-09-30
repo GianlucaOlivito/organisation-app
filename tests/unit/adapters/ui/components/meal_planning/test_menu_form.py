@@ -1,0 +1,124 @@
+from datetime import date
+from unittest.mock import MagicMock
+from uuid import uuid4
+
+import flet as ft
+
+from app.domain.meal_planning.menu import Menu
+
+
+def test_initialization_creation_mode(menu_form):
+    assert menu_form._menu_id is not None
+    assert menu_form._description_field.value == ""
+    assert menu_form._date_field.value == ""
+    assert len(menu_form._courses_column.controls) == 1
+
+
+def test_initialization_edit_mode(sample_menus, menu_form):
+    menu_to_edit = sample_menus[0]
+    menu_form.__init__(menu=menu_to_edit)
+    menu_form.update = MagicMock()
+
+    assert menu_form._menu_id == menu_to_edit.id
+    assert menu_form._description_field.value == menu_to_edit.description
+    assert menu_form._date_field.value == str(menu_to_edit.scheduled_date)
+    assert len(menu_form._courses_column.controls) == len(menu_to_edit.courses)
+
+    first_row = menu_form._courses_column.controls[0]
+
+    assert first_row.controls[0].value == str(menu_to_edit.courses[0].recipe_id)
+    assert first_row.controls[1].value == str(menu_to_edit.courses[0].portions)
+
+
+def test_add_course_row(menu_form):
+    recipe_id = str(uuid4())
+    initial_count = len(menu_form._courses_column.controls)
+    menu_form._add_course_row(recipe_id, "4")
+
+    assert len(menu_form._courses_column.controls) == initial_count + 1
+
+    new_row = menu_form._courses_column.controls[-1]
+
+    assert isinstance(new_row, ft.Row)
+    assert new_row.controls[0].value == recipe_id
+    assert new_row.controls[1].value == "4"
+
+
+def test_delete_course_row(menu_form):
+    recipe_id = str(uuid4())
+    menu_form._add_course_row(recipe_id, "2")
+
+    assert len(menu_form._courses_column.controls) == 2
+
+    delete_button = menu_form._courses_column.controls[1].controls[2]
+    delete_button.on_click(MagicMock())
+
+    assert len(menu_form._courses_column.controls) == 1
+
+
+def test_get_menu_constructs_valid_domain_model(menu_form):
+    recipe_id = uuid4()
+    menu_form._description_field.value = " Sunday Dinner "
+    menu_form._date_field.value = " 2026-10-01 "
+    row = menu_form._courses_column.controls[0]
+    row.controls[0].value = f" {recipe_id} "
+    row.controls[1].value = " 4 "
+    menu = menu_form.get_menu()
+
+    assert isinstance(menu, Menu)
+    assert menu.id == menu_form._menu_id
+    assert menu.description == "Sunday Dinner"
+    assert menu.scheduled_date == date(2026, 10, 1)
+    assert len(menu.courses) == 1
+    assert menu.courses[0].recipe_id == recipe_id
+    assert menu.courses[0].portions == 4
+
+
+def test_get_menu_filters_out_completely_empty_rows(menu_form):
+    recipe_id = uuid4()
+    menu_form._description_field.value = "Quick Lunch"
+    menu_form._date_field.value = "2026-10-02"
+    row1 = menu_form._courses_column.controls[0]
+    row1.controls[0].value = str(recipe_id)
+    row1.controls[1].value = "2"
+    menu_form._add_course_row("", "")
+    menu = menu_form.get_menu()
+
+    assert len(menu.courses) == 1
+    assert menu.courses[0].recipe_id == recipe_id
+    assert menu.courses[0].portions == 2
+
+
+def test_handle_save_success(menu_form):
+    recipe_id = uuid4()
+    on_save_mock = MagicMock()
+    menu_form._on_save = on_save_mock
+    menu_form._description_field.value = "Birthday Feast"
+    menu_form._date_field.value = "2026-10-05"
+    row = menu_form._courses_column.controls[0]
+    row.controls[0].value = str(recipe_id)
+    row.controls[1].value = "6"
+    mock_event = MagicMock()
+    menu_form._handle_save(mock_event)
+
+    assert menu_form._error_text.visible is False
+    on_save_mock.assert_called_once()
+
+    saved_menu = on_save_mock.call_args[0][0]
+
+    assert saved_menu.description == "Birthday Feast"
+
+
+def test_handle_save_displays_error_on_validation_failure(menu_form):
+    on_save_mock = MagicMock()
+    menu_form._on_save = on_save_mock
+    menu_form.get_menu = MagicMock(
+        side_effect=ValueError("Description cannot be empty")
+    )
+    mock_event = MagicMock()
+    menu_form._handle_save(mock_event)
+
+    assert menu_form._error_text.visible is True
+    assert menu_form._error_text.value == "Description cannot be empty"
+    on_save_mock.assert_not_called()
+    menu_form.update.assert_called_once()

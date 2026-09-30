@@ -5,11 +5,13 @@ import pytest
 from app.adapters.ui.components.meal_planning.menu_filter_handler import (
     MenuFilterHandler,
 )
+from app.adapters.ui.components.meal_planning.menu_form import MenuForm
 from app.adapters.ui.components.recipes.recipe_filter_handler import RecipeFilterHandler
 from app.adapters.ui.components.recipes.recipe_form import RecipeForm
 from app.adapters.ui.views.logs_view import LogsView
 from app.adapters.ui.views.menus_view import MenusView
 from app.adapters.ui.views.recipes_view import RecipesView
+from app.application.meal_planning.modification_service import MenuModificationService
 from app.application.meal_planning.search_service import MenuSearchService
 from app.application.recipes.modification_service import RecipeModificationService
 from app.application.recipes.search_service import RecipeSearchService
@@ -60,6 +62,13 @@ def recipe_form() -> RecipeForm:
 
 
 @pytest.fixture
+def menu_form() -> MenuForm:
+    form = MenuForm()
+    form.update = MagicMock()
+    return form
+
+
+@pytest.fixture
 def logs_view(log_buffer: LogBuffer) -> LogsView:
     return LogsView(log_buffer=log_buffer)
 
@@ -79,10 +88,12 @@ def recipes_view(
 
 @pytest.fixture
 def menus_view(
+    meal_planning_modification_service: MenuModificationService,
     populated_menu_search_service: MenuSearchService,
     populated_recipe_search_service: RecipeSearchService,
 ) -> MenusView:
     view = MenusView(
+        modification_service=meal_planning_modification_service,
         menu_search_service=populated_menu_search_service,
         recipe_search_service=populated_recipe_search_service,
     )

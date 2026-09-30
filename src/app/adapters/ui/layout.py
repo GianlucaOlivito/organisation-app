@@ -24,7 +24,11 @@ class AppLayout(ft.Row):
                 container.recipe_modification_service,
                 container.recipe_search_service,
             ),
-            MenusView(container.menu_search_service, container.recipe_search_service),
+            MenusView(
+                container.menu_modification_service,
+                container.menu_search_service,
+                container.recipe_search_service,
+            ),
             InventoryView(),
             ShoppingListView(),
             LogsView(container.log_buffer),
