@@ -45,7 +45,8 @@ class InventoryCard(ft.Card):
         id = str(item.id)[:8]
         qty = int(item.quantity) if item.quantity.is_integer() else item.quantity
         unit_str = f" {item.unit}" if item.unit else ""
-        return f"{id}\t{qty}\t{unit_str}\t{item.name}"
+        qty_unit = f"{qty} {unit_str}".strip().ljust(12)
+        return f"{id:<10} {qty_unit} {item.name}"
 
     def _build_header(self) -> ft.Control:
         controls: list[ft.Control] = [create_header("Vorrat", expand=True)]

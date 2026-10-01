@@ -29,7 +29,10 @@ class AppLayout(ft.Row):
                 container.menu_search_service,
                 container.recipe_search_service,
             ),
-            InventoryView(container.inventory_search_service),
+            InventoryView(
+                container.inventory_modification_service,
+                container.inventory_search_service,
+            ),
             ShoppingListView(),
             LogsView(container.log_buffer),
         ]

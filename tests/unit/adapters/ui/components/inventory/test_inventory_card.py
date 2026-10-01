@@ -11,10 +11,13 @@ def test_format_inventory_item():
     formatted_whole = InventoryCard._format_inventory_item(item_whole)
     formatted_unit = InventoryCard._format_inventory_item(item_unit)
     formatted_decimal = InventoryCard._format_inventory_item(item_decimal)
+    id_whole = str(item_whole.id)[:8]
+    id_unit = str(item_unit.id)[:8]
+    id_decimal = str(item_decimal.id)[:8]
 
-    assert formatted_whole == f"{str(item_whole.id)[:8]}\t10\t\tEier"
-    assert formatted_unit == f"{str(item_unit.id)[:8]}\t500\t g\tMehl"
-    assert formatted_decimal == f"{str(item_decimal.id)[:8]}\t1.5\t l\tMilch"
+    assert formatted_whole == f"{id_whole:<10} {'10'.ljust(12)} Eier"
+    assert formatted_unit == f"{id_unit:<10} {'500  g'.ljust(12)} Mehl"
+    assert formatted_decimal == f"{id_decimal:<10} {'1.5  l'.ljust(12)} Milch"
 
 
 def test_inventory_card_renders_full_data():
