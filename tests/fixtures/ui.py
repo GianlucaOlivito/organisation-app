@@ -5,6 +5,7 @@ import pytest
 from app.adapters.ui.components.inventory.inventory_filter_handler import (
     InventoryFilterHandler,
 )
+from app.adapters.ui.components.inventory.inventory_form import InventoryForm
 from app.adapters.ui.components.meal_planning.menu_filter_handler import (
     MenuFilterHandler,
 )
@@ -15,6 +16,7 @@ from app.adapters.ui.views.inventory_view import InventoryView
 from app.adapters.ui.views.logs_view import LogsView
 from app.adapters.ui.views.menus_view import MenusView
 from app.adapters.ui.views.recipes_view import RecipesView
+from app.application.inventory.modification_service import InventoryModificationService
 from app.application.inventory.search_service import InventorySearchService
 from app.application.meal_planning.modification_service import MenuModificationService
 from app.application.meal_planning.search_service import MenuSearchService
@@ -92,6 +94,13 @@ def menu_form() -> MenuForm:
 
 
 @pytest.fixture
+def inventory_form() -> InventoryForm:
+    form = InventoryForm()
+    form.update = MagicMock()
+    return form
+
+
+@pytest.fixture
 def logs_view(log_buffer: LogBuffer) -> LogsView:
     return LogsView(log_buffer=log_buffer)
 
@@ -126,8 +135,12 @@ def menus_view(
 
 @pytest.fixture
 def inventory_view(
+    inventory_modification_service: InventoryModificationService,
     populated_inventory_search_service: InventorySearchService,
 ) -> InventoryView:
-    view = InventoryView(search_service=populated_inventory_search_service)
+    view = InventoryView(
+        modification_service=inventory_modification_service,
+        search_service=populated_inventory_search_service,
+    )
     view.update = MagicMock()
     return view
