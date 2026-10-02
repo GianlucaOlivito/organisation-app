@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import flet as ft
 
 from app.adapters.ui.components.recipes.recipe_card import RecipeCard
@@ -43,7 +45,7 @@ def test_search_and_filter_reset_opposite_channel(recipes_view):
 
 
 def test_toolbar_structure(recipes_view):
-    toolbar = recipes_view.controls[2]
+    toolbar = recipes_view._toolbar
 
     assert isinstance(toolbar, ft.Row)
     assert len(toolbar.controls) == 5
@@ -77,6 +79,31 @@ def test_open_form_for_editing(recipes_view, sample_recipes):
 
     assert isinstance(form, RecipeForm)
     assert form._recipe_id == recipe_to_edit.id
+
+
+def test_close_form_restores_toolbar(recipes_view):
+    recipes_view._open_form()
+    recipes_view._close_form()
+
+    assert recipes_view._toolbar.visible is True
+
+
+def test_save_form_creates_and_modifies_recipe(
+    recipes_view, recipes_modification_service, sample_recipes
+):
+    recipes_modification_service.create = MagicMock()
+    recipes_modification_service.modify = MagicMock()
+    recipes_view._open_form()
+    form = recipes_view._content_container.controls[0]
+    form._on_save(sample_recipes[0])
+
+    recipes_modification_service.create.assert_called_once_with(sample_recipes[0])
+
+    recipes_view._open_form(sample_recipes[1])
+    form = recipes_view._content_container.controls[0]
+    form._on_save(sample_recipes[1])
+
+    recipes_modification_service.modify.assert_called_once_with(sample_recipes[1])
 
 
 def test_delete_recipe(recipes_view, sample_recipes):

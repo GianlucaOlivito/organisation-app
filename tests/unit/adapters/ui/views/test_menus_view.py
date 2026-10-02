@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import flet as ft
 
 from app.adapters.ui.components.meal_planning.menu_card import MenuCard
@@ -47,7 +49,7 @@ def test_search_and_filter_reset_opposite_channel(menus_view, sample_menus):
 
 
 def test_toolbar_structure(menus_view):
-    toolbar = menus_view.controls[2]
+    toolbar = menus_view._toolbar
 
     assert isinstance(toolbar, ft.Row)
     assert len(toolbar.controls) == 6
@@ -82,6 +84,30 @@ def test_open_form_for_editing(menus_view, sample_menus):
 
     assert isinstance(form, MenuForm)
     assert form._menu_id == menu_to_edit.id
+
+
+def test_close_form_restores_toolbar(menus_view):
+    menus_view._open_form()
+    menus_view._close_form()
+
+    assert menus_view._toolbar.visible is True
+
+
+def test_save_form_creates_and_modifies_menu(
+    menus_view, meal_planning_modification_service, sample_menus
+):
+    meal_planning_modification_service.create = MagicMock()
+    meal_planning_modification_service.modify = MagicMock()
+    menus_view._open_form()
+    form = menus_view._content_container.controls[0]
+    form._on_save(sample_menus[0])
+    meal_planning_modification_service.create.assert_called_once_with(sample_menus[0])
+
+    menus_view._open_form(sample_menus[1])
+    form = menus_view._content_container.controls[0]
+    form._on_save(sample_menus[1])
+
+    meal_planning_modification_service.modify.assert_called_once_with(sample_menus[1])
 
 
 def test_delete_menu(menus_view, sample_menus):
