@@ -17,6 +17,7 @@ class App:
         page.title = cfg.app_title
         page.window.icon = str(cfg.assets_dir / cfg.app_logo_file_name)
         page.theme_mode = theme.page_theme_mode
+        page.theme = ft.Theme(scrollbar_theme=theme.scrollbar_theme)
         page.padding = theme.spacing_none
         page.window.width = cfg.window_width
         page.window.height = cfg.window_height

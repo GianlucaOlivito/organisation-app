@@ -37,11 +37,11 @@ class AppLayout(ft.Row):
             LogsView(container.log_buffer),
         ]
         nav_items = [
-            (ft.Icons.RESTAURANT_MENU, "Recipes"),
-            (ft.Icons.CALENDAR_MONTH, "Menus"),
-            (ft.Icons.INVENTORY_2, "Inventory"),
-            (ft.Icons.SHOPPING_CART, "Shopping"),
-            (ft.Icons.TERMINAL, "Logs"),
+            (ft.Icons.RESTAURANT_MENU, "Rezepte"),
+            (ft.Icons.CALENDAR_MONTH, "Menüplanung"),
+            (ft.Icons.INVENTORY_2, "Vorrat"),
+            (ft.Icons.SHOPPING_CART, "Einkauf"),
+            (ft.Icons.TERMINAL, "Logdaten"),
         ]
         self._sidebar = Sidebar(items=nav_items, on_change=self._switch_tab)
         self._content_area = create_container(content=self._views[0], expand=True)

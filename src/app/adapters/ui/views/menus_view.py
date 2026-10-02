@@ -4,9 +4,7 @@ import flet as ft
 
 from app.adapters.ui.components.common.controls import (
     create_add_button,
-    create_container,
     create_filter_button,
-    create_muted_text,
     create_search_button,
     create_text_field,
 )
@@ -21,10 +19,10 @@ from app.application.meal_planning.search_service import MenuSearchService
 from app.application.recipes.search_service import RecipeSearchService
 from app.domain.meal_planning.menu import Menu
 
-from .base_view import BaseView
+from .entity_view import EntityView
 
 
-class MenusView(BaseView):
+class MenusView(EntityView[Menu]):
     """Represents a view component for meal planning (UC-2.1 & UC-2.2)."""
 
     def __init__(
@@ -36,6 +34,16 @@ class MenusView(BaseView):
         self._modification_service = modification_service
         self._recipe_search_service = recipe_search_service
         self._filter_handler = MenuFilterHandler(menu_search_service)
+        self._grid = ft.GridView(
+            expand=True,
+            max_extent=theme.grid_max_extent,
+            child_aspect_ratio=theme.grid_aspect_ratio,
+            spacing=theme.spacing_medium,
+            run_spacing=theme.spacing_medium,
+        )
+        super().__init__(title="Menüplanung", empty_text="Keine Menüs gefunden")
+
+    def _build_toolbar(self) -> ft.Row:
         self._add_button = create_add_button(on_click=lambda _: self._open_form())
         self._search_button = create_search_button(on_click=self._search)
         self._search_input = create_text_field(
@@ -51,7 +59,7 @@ class MenusView(BaseView):
             hint_text="Enddatum (DD.MM.YYYY)",
             on_submit=self._filter,
         )
-        self._toolbar = ft.Row(
+        return ft.Row(
             controls=[
                 self._add_button,
                 self._search_button,
@@ -63,26 +71,6 @@ class MenusView(BaseView):
             spacing=theme.spacing_medium,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
         )
-        self._grid = ft.GridView(
-            expand=True,
-            max_extent=theme.grid_max_extent,
-            child_aspect_ratio=theme.grid_aspect_ratio,
-            spacing=theme.spacing_medium,
-            run_spacing=theme.spacing_medium,
-        )
-        self._empty_state = create_container(
-            content=create_muted_text("Keine Menüs gefunden"),
-            alignment=ft.Alignment.CENTER,
-            expand=True,
-        )
-        self._content_container = ft.Column(
-            expand=True,
-            alignment=ft.MainAxisAlignment.START,
-            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
-            controls=[self._empty_state],
-        )
-        super().__init__(title="Meal Planning")
-        self._search()
 
     def _search(self, e: ft.ControlEvent | None = None) -> None:
         self._render_results(query=self._search_input.value or "")
@@ -97,23 +85,19 @@ class MenusView(BaseView):
         self._modification_service.delete(menu_id)
         self._search()
 
-    def _close_form(self) -> None:
-        self._toolbar.visible = True
-        self._search()
+    def _create_form(
+        self,
+        entity: Menu | None,
+        on_save: callable,
+        on_close: callable,
+    ) -> ft.Control:
+        return MenuForm(menu=entity, on_save=on_save, on_close=on_close)
 
-    def _open_form(self, menu: Menu | None = None) -> None:
-        def _handle_save(saved_menu: Menu) -> None:
-            if menu is not None:
-                self._modification_service.modify(saved_menu)
-            else:
-                self._modification_service.create(saved_menu)
-            self._close_form()
-
-        self._toolbar.visible = False
-        self._content_container.controls = [
-            MenuForm(menu=menu, on_save=_handle_save, on_close=self._close_form)
-        ]
-        self.update()
+    def _save_entity(self, entity: Menu, is_edit: bool) -> None:
+        if is_edit:
+            self._modification_service.modify(entity)
+        else:
+            self._modification_service.create(entity)
 
     def _render_results(
         self,
@@ -135,6 +119,3 @@ class MenusView(BaseView):
                 for m in menus
             ]
             self._content_container.controls = [self._grid]
-
-    def _build_view(self) -> None:
-        self.controls.extend([self._toolbar, self._content_container])

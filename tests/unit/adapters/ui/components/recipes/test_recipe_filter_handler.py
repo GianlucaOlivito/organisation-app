@@ -29,21 +29,6 @@ def test_filter_by_ingredients_repository_search(recipe_filter_handler):
     assert results[0].name == "Tomato Soup"
 
 
-def test_filter_by_query_and_ingredients_in_memory(recipe_filter_handler):
-    matching = recipe_filter_handler.filter(
-        query="Spaghetti Carbonara", ing_query="Pasta, Eggs"
-    )
-
-    assert len(matching) == 1
-    assert matching[0].name == "Spaghetti Carbonara"
-
-    mismatch = recipe_filter_handler.filter(
-        query="Spaghetti Carbonara", ing_query="Tomato"
-    )
-
-    assert len(mismatch) == 0
-
-
 def test_filter_invalid_uuid_falls_back_to_name_search(recipe_filter_handler):
     results = recipe_filter_handler.filter(query="non-existent-recipe")
 

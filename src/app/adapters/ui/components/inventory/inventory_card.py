@@ -2,21 +2,18 @@ from collections.abc import Callable
 
 import flet as ft
 
+from app.adapters.ui.components.common.base_card import BaseCard
 from app.adapters.ui.components.common.controls import (
-    create_container,
     create_divider,
-    create_edit_button,
-    create_header,
+    create_muted_text,
     create_text,
 )
 from app.adapters.ui.theme import theme
 from app.domain.inventory.inventory_item import InventoryItem
 
 
-class InventoryCard(ft.Card):
-    """
-    Represents a component to display the inventory as a table of InventoryItem entities.
-    """
+class InventoryCard(BaseCard[list[InventoryItem]]):
+    """Represents a component to display the whole inventory."""
 
     def __init__(
         self,
@@ -24,48 +21,23 @@ class InventoryCard(ft.Card):
         on_edit: Callable[[list[InventoryItem]], None] | None = None,
     ) -> None:
         self.inventory = inventory
-        self.on_edit = on_edit
-        super().__init__(
-            content=create_container(
-                content=ft.Column(
-                    controls=[
-                        self._build_header(),
-                        create_divider(),
-                        self._build_inventory_section(),
-                    ],
-                    spacing=theme.spacing_medium,
-                    scroll=ft.ScrollMode.AUTO,
-                    expand=True,
-                ),
-            )
-        )
-
-    @staticmethod
-    def _format_inventory_item(item: InventoryItem) -> str:
-        id = str(item.id)[:8]
-        qty = int(item.quantity) if item.quantity.is_integer() else item.quantity
-        unit_str = f" {item.unit}" if item.unit else ""
-        qty_unit = f"{qty} {unit_str}".strip().ljust(12)
-        return f"{id:<10} {qty_unit} {item.name}"
-
-    def _build_header(self) -> ft.Control:
-        controls: list[ft.Control] = [create_header("Vorrat", expand=True)]
-        if self.on_edit is not None:
-            controls.append(
-                create_edit_button(on_click=lambda _: self.on_edit(self.inventory))
-            )
-        return ft.Row(controls=controls, alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+        super().__init__(entity=inventory, on_edit=on_edit, on_delete=None)
 
     def _build_inventory_rows(self) -> list[ft.Control]:
         rows: list[ft.Control] = []
         for item in self.inventory:
+            qty = int(item.quantity) if item.quantity.is_integer() else item.quantity
+            unit_str = item.unit if item.unit else ""
             row = ft.Row(
                 controls=[
+                    create_muted_text(str(item.id)[:8], width=theme.col_width_small),
                     create_text(
-                        self._format_inventory_item(item), size=theme.font_size_small
-                    )
+                        f"{qty} {unit_str}".strip(), width=theme.col_width_small
+                    ),
+                    create_text(item.name, expand=True),
                 ],
                 alignment=ft.MainAxisAlignment.START,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
             )
             rows.append(row)
         return rows
@@ -75,3 +47,10 @@ class InventoryCard(ft.Card):
             controls=self._build_inventory_rows(),
             spacing=theme.spacing_small,
         )
+
+    def _build_card_content(self) -> list[ft.Control]:
+        return [
+            self._build_header(title="Vorrat"),
+            create_divider(),
+            self._build_inventory_section(),
+        ]

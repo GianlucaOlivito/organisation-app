@@ -56,14 +56,14 @@ def test_delete_ingredient_row(recipe_form):
     assert len(recipe_form._ingredients_column.controls) == 1
 
 
-def test_get_recipe_constructs_valid_domain_model(recipe_form):
+def test_extract_entity_constructs_valid_domain_model(recipe_form):
     recipe_form._name_field.value = " Tomato Soup "
     recipe_form._instructions_field.value = " Cook tomatoes. "
     row = recipe_form._ingredients_column.controls[0]
     row.controls[0].value = " Tomatoes "
     row.controls[1].value = " 4 "
     row.controls[2].value = " pcs "
-    recipe = recipe_form.get_recipe()
+    recipe = recipe_form._extract_entity()
 
     assert isinstance(recipe, Recipe)
     assert recipe.id == recipe_form._recipe_id
@@ -75,7 +75,7 @@ def test_get_recipe_constructs_valid_domain_model(recipe_form):
     assert recipe.ingredients[0].unit == "pcs"
 
 
-def test_get_recipe_filters_out_completely_empty_rows(recipe_form):
+def test_extract_entity_filters_out_completely_empty_rows(recipe_form):
     recipe_form._name_field.value = "Pancakes"
     recipe_form._instructions_field.value = "Mix and fry."
     row1 = recipe_form._ingredients_column.controls[0]
@@ -83,7 +83,7 @@ def test_get_recipe_filters_out_completely_empty_rows(recipe_form):
     row1.controls[1].value = "200"
     row1.controls[2].value = "g"
     recipe_form._add_ingredient_row("", "", "")
-    recipe = recipe_form.get_recipe()
+    recipe = recipe_form._extract_entity()
 
     assert len(recipe.ingredients) == 1
     assert recipe.ingredients[0].name == "Flour"
@@ -113,7 +113,9 @@ def test_handle_save_success(recipe_form):
 def test_handle_save_displays_error_on_validation_failure(recipe_form):
     on_save_mock = MagicMock()
     recipe_form._on_save = on_save_mock
-    recipe_form.get_recipe = MagicMock(side_effect=ValueError("Name cannot be empty"))
+    recipe_form._extract_entity = MagicMock(
+        side_effect=ValueError("Name cannot be empty")
+    )
     mock_event = MagicMock()
     recipe_form._handle_save(mock_event)
 
@@ -121,3 +123,15 @@ def test_handle_save_displays_error_on_validation_failure(recipe_form):
     assert recipe_form._error_text.value == "Name cannot be empty"
     on_save_mock.assert_not_called()
     recipe_form.update.assert_called_once()
+
+
+def test_close_button_triggers_on_close_callback(recipe_form):
+    on_close_mock = MagicMock()
+    recipe_form._on_close = on_close_mock
+    header_row = recipe_form.controls[0]
+    header_action_row = header_row.controls[1]
+    close_button = header_action_row.controls[-1]
+    mock_event = MagicMock()
+    close_button.on_click(mock_event)
+
+    on_close_mock.assert_called_once()

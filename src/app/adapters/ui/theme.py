@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Any
 
 import flet as ft
 
@@ -16,11 +15,10 @@ class Theme:
     divider_width: int = 1
     border_radius_medium: int = 8
     sidebar_width: int = 100
-    container_height_medium: int = 200
     grid_max_extent: int = 400
     grid_aspect_ratio: float = 1.0
+    col_width_small: int = 100
     input_field_min_lines: int = 5
-    input_field_max_lines: int = 10
     font_family: str = "Consolas"
     font_size_xl: int = 24
     font_size_large: int = 20
@@ -33,7 +31,7 @@ class Theme:
     color_inactive: str = ft.Colors.ON_SURFACE_VARIANT
     color_text_muted: str = ft.Colors.GREY_600
     color_bg: str = ft.Colors.GREY_900
-    colors_log_levels: dict[str, dict[str, Any]] = field(
+    colors_log_levels: dict[str, dict[str, str | None]] = field(
         default_factory=lambda: {
             "DEBUG": {"color": "#ADD8E6", "bgcolor": None},
             "INFO": {"color": "#74E3A8", "bgcolor": None},
@@ -42,6 +40,24 @@ class Theme:
             "CRITICAL": {"color": "#FFFFFF", "bgcolor": "#C93737"},
         }
     )
+    scrollbar_theme: ft.ScrollbarTheme = field(
+        default_factory=lambda: ft.ScrollbarTheme(
+            thumb_visibility=False,
+            track_visibility=False,
+            thickness=6,
+            radius=3,
+            thumb_color={
+                ft.ControlState.DEFAULT: ft.Colors.WHITE_24,
+                ft.ControlState.HOVERED: ft.Colors.PRIMARY,
+                ft.ControlState.DRAGGED: ft.Colors.PRIMARY,
+            },
+            main_axis_margin=4,
+        )
+    )
+
+    @property
+    def log_levels(self) -> tuple[str, ...]:
+        return tuple(self.colors_log_levels.keys())
 
 
 theme = Theme()
