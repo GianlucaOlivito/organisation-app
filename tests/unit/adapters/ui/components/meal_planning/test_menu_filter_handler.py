@@ -31,3 +31,9 @@ def test_filter_by_single_date_bound(menu_filter_handler, sample_menus):
     result_end = menu_filter_handler.filter(end_date="05.09.2026")
 
     assert result_end == [sample_menus[0]]
+
+
+def test_filter_by_invalid_date_returns_all(menu_filter_handler, sample_menus):
+    result = menu_filter_handler.filter(start_date="not-a-date")
+
+    assert result == sample_menus
