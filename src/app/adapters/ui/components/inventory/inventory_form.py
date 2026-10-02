@@ -3,22 +3,18 @@ from uuid import UUID, uuid4
 
 import flet as ft
 
+from app.adapters.ui.components.common.base_form import BaseForm
 from app.adapters.ui.components.common.controls import (
     create_add_button,
-    create_close_button,
     create_container,
     create_delete_button,
-    create_divider,
-    create_save_button,
-    create_text,
     create_text_field,
-    create_title,
 )
 from app.adapters.ui.theme import theme
 from app.domain.inventory.inventory_item import InventoryItem
 
 
-class InventoryForm(ft.Column):
+class InventoryForm(BaseForm[list[InventoryItem]]):
     """Represents a form component for modifying the inventory."""
 
     def __init__(
@@ -27,61 +23,17 @@ class InventoryForm(ft.Column):
         on_save: Callable[[list[InventoryItem]], None] | None = None,
         on_close: Callable[[], None] | None = None,
     ) -> None:
-        super().__init__(
-            spacing=theme.spacing_medium,
-            scroll=ft.ScrollMode.AUTO,
-            expand=True,
-        )
         self._inventory = inventory or []
-        self._on_save = on_save
-        header_row = ft.Row(
-            controls=[
-                create_title("Vorrat modifizieren"),
-                ft.Row(
-                    controls=[
-                        create_add_button(
-                            on_click=lambda _: (self._add_item_row(), self.update())
-                        ),
-                        create_save_button(on_click=self._handle_save),
-                        create_close_button(
-                            on_click=lambda _: on_close() if on_close else None
-                        ),
-                    ]
-                ),
-            ],
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-        )
-        self._error_text = create_text(
-            value="",
-            color=theme.color_danger,
-            size=theme.font_size_small,
-            visible=False,
-        )
-        self._items_column = ft.Column(
-            spacing=theme.spacing_small,
-            scroll=ft.ScrollMode.AUTO,
-        )
-        items_container = create_container(
-            content=self._items_column,
-            height=theme.container_height_medium,
-            padding=theme.spacing_none,
-        )
-        if self._inventory:
-            for item in self._inventory:
-                self._add_item_row(
-                    item_id=str(item.id),
-                    name=item.name,
-                    quantity=str(item.quantity),
-                    unit=item.unit or "",
-                )
-        else:
-            self._add_item_row()
-        self.controls = [
-            header_row,
-            create_divider(),
-            self._error_text,
-            items_container,
+        self._items_column = ft.Column(spacing=theme.spacing_small)
+        extra_header = [
+            create_add_button(on_click=lambda _: (self._add_item_row(), self.update()))
         ]
+        super().__init__(
+            title="Vorrat modifizieren",
+            on_save=on_save,
+            on_close=on_close,
+            extra_header_controls=extra_header,
+        )
 
     def _add_item_row(
         self,
@@ -103,7 +55,7 @@ class InventoryForm(ft.Column):
         row.controls = [name_field, qty_field, unit_field, del_btn]
         self._items_column.controls.append(row)
 
-    def get_inventory(self) -> list[InventoryItem]:
+    def _extract_entity(self) -> list[InventoryItem]:
         items: list[InventoryItem] = []
         for row in self._items_column.controls:
             if not isinstance(row, ft.Row):
@@ -116,13 +68,19 @@ class InventoryForm(ft.Column):
             items.append(InventoryItem(id=row.data, name=name, quantity=qty, unit=unit))
         return items
 
-    def _handle_save(self, e: ft.ControlEvent) -> None:
-        try:
-            inventory = self.get_inventory()
-            self._error_text.visible = False
-            if self._on_save:
-                self._on_save(inventory)
-        except (TypeError, ValueError) as err:
-            self._error_text.value = str(err)
-            self._error_text.visible = True
-            self.update()
+    def _build_form_controls(self) -> list[ft.Control]:
+        items_container = create_container(
+            content=self._items_column,
+            padding=theme.spacing_none,
+        )
+        if self._inventory:
+            for item in self._inventory:
+                self._add_item_row(
+                    item_id=item.id,
+                    name=item.name,
+                    quantity=str(item.quantity),
+                    unit=item.unit or "",
+                )
+        else:
+            self._add_item_row()
+        return [items_container]

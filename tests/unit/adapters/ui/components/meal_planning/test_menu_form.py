@@ -56,14 +56,14 @@ def test_delete_course_row(menu_form):
     assert len(menu_form._courses_column.controls) == 1
 
 
-def test_get_menu_constructs_valid_domain_model(menu_form):
+def test_extract_entity_constructs_valid_domain_model(menu_form):
     recipe_id = uuid4()
     menu_form._description_field.value = " Sunday Dinner "
     menu_form._date_field.value = " 2026-10-01 "
     row = menu_form._courses_column.controls[0]
     row.controls[0].value = f" {recipe_id} "
     row.controls[1].value = " 4 "
-    menu = menu_form.get_menu()
+    menu = menu_form._extract_entity()
 
     assert isinstance(menu, Menu)
     assert menu.id == menu_form._menu_id
@@ -74,7 +74,7 @@ def test_get_menu_constructs_valid_domain_model(menu_form):
     assert menu.courses[0].portions == 4
 
 
-def test_get_menu_filters_out_completely_empty_rows(menu_form):
+def test_extract_entity_filters_out_completely_empty_rows(menu_form):
     recipe_id = uuid4()
     menu_form._description_field.value = "Quick Lunch"
     menu_form._date_field.value = "2026-10-02"
@@ -82,7 +82,7 @@ def test_get_menu_filters_out_completely_empty_rows(menu_form):
     row1.controls[0].value = str(recipe_id)
     row1.controls[1].value = "2"
     menu_form._add_course_row("", "")
-    menu = menu_form.get_menu()
+    menu = menu_form._extract_entity()
 
     assert len(menu.courses) == 1
     assert menu.courses[0].recipe_id == recipe_id
@@ -112,7 +112,7 @@ def test_handle_save_success(menu_form):
 def test_handle_save_displays_error_on_validation_failure(menu_form):
     on_save_mock = MagicMock()
     menu_form._on_save = on_save_mock
-    menu_form.get_menu = MagicMock(
+    menu_form._extract_entity = MagicMock(
         side_effect=ValueError("Description cannot be empty")
     )
     mock_event = MagicMock()
@@ -122,3 +122,15 @@ def test_handle_save_displays_error_on_validation_failure(menu_form):
     assert menu_form._error_text.value == "Description cannot be empty"
     on_save_mock.assert_not_called()
     menu_form.update.assert_called_once()
+
+
+def test_close_button_triggers_on_close_callback(menu_form):
+    on_close_mock = MagicMock()
+    menu_form._on_close = on_close_mock
+    header_row = menu_form.controls[0]
+    header_action_row = header_row.controls[1]
+    close_button = header_action_row.controls[-1]
+    mock_event = MagicMock()
+    close_button.on_click(mock_event)
+
+    on_close_mock.assert_called_once()

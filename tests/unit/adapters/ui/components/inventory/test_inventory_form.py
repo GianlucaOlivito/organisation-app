@@ -53,13 +53,12 @@ def test_delete_item_row(inventory_form):
     assert len(inventory_form._items_column.controls) == 1
 
 
-def test_get_inventory_constructs_valid_domain_models(inventory_form):
+def test_extract_entity_constructs_valid_domain_models(inventory_form):
     row = inventory_form._items_column.controls[0]
     row.controls[0].value = " Apple "
     row.controls[1].value = " 10 "
     row.controls[2].value = " kg "
-
-    inventory = inventory_form.get_inventory()
+    inventory = inventory_form._extract_entity()
 
     assert len(inventory) == 1
     assert isinstance(inventory[0], InventoryItem)
@@ -68,14 +67,13 @@ def test_get_inventory_constructs_valid_domain_models(inventory_form):
     assert inventory[0].unit == "kg"
 
 
-def test_get_inventory_filters_out_completely_empty_rows(inventory_form):
+def test_extract_entity_filters_out_completely_empty_rows(inventory_form):
     row1 = inventory_form._items_column.controls[0]
     row1.controls[0].value = "Flour"
     row1.controls[1].value = "1000"
     row1.controls[2].value = "g"
-
     inventory_form._add_item_row(name="", quantity="", unit="")
-    inventory = inventory_form.get_inventory()
+    inventory = inventory_form._extract_entity()
 
     assert len(inventory) == 1
     assert inventory[0].name == "Flour"
@@ -85,12 +83,10 @@ def test_get_inventory_filters_out_completely_empty_rows(inventory_form):
 def test_handle_save_success(inventory_form):
     on_save_mock = MagicMock()
     inventory_form._on_save = on_save_mock
-
     row = inventory_form._items_column.controls[0]
     row.controls[0].value = "Milk"
     row.controls[1].value = "2"
     row.controls[2].value = "L"
-
     mock_event = MagicMock()
     inventory_form._handle_save(mock_event)
 
@@ -106,10 +102,9 @@ def test_handle_save_success(inventory_form):
 def test_handle_save_displays_error_on_validation_failure(inventory_form):
     on_save_mock = MagicMock()
     inventory_form._on_save = on_save_mock
-    inventory_form.get_inventory = MagicMock(
+    inventory_form._extract_entity = MagicMock(
         side_effect=ValueError("Name cannot be empty")
     )
-
     mock_event = MagicMock()
     inventory_form._handle_save(mock_event)
 
@@ -117,3 +112,15 @@ def test_handle_save_displays_error_on_validation_failure(inventory_form):
     assert inventory_form._error_text.value == "Name cannot be empty"
     on_save_mock.assert_not_called()
     inventory_form.update.assert_called_once()
+
+
+def test_close_button_triggers_on_close_callback(inventory_form):
+    on_close_mock = MagicMock()
+    inventory_form._on_close = on_close_mock
+    header_row = inventory_form.controls[0]
+    header_action_row = header_row.controls[1]
+    close_button = header_action_row.controls[-1]
+    mock_event = MagicMock()
+    close_button.on_click(mock_event)
+
+    on_close_mock.assert_called_once()
