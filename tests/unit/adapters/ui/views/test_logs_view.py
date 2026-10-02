@@ -5,11 +5,10 @@ import flet as ft
 import pytest
 
 from app.adapters.ui.theme import theme
-from app.adapters.ui.views.logs_view import LogsView
 
 
 def test_initialization(logs_view):
-    assert logs_view._enabled_levels == set(LogsView.LEVELS)
+    assert logs_view._enabled_levels == set(theme.log_levels)
     assert isinstance(logs_view._logs, ft.ListView)
     assert isinstance(logs_view._filter, ft.SegmentedButton)
     assert logs_view._loop is None
@@ -58,7 +57,7 @@ def test_clear_logs_button_action(log_buffer, logs_view):
 def test_filter_logs_event(logs_view):
     mock_event = MagicMock()
     mock_event.control.selected = ["ERROR", "CRITICAL"]
-    logs_view._filter_logs(mock_event)
+    logs_view._filter.on_change(mock_event)
 
     assert logs_view._enabled_levels == {"ERROR", "CRITICAL"}
 
