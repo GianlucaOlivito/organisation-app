@@ -6,6 +6,9 @@ from app.adapters.ui.components.inventory.inventory_filter_handler import (
     InventoryFilterHandler,
 )
 from app.adapters.ui.components.inventory.inventory_form import InventoryForm
+from app.adapters.ui.components.inventory.shopping_list_filter_handler import (
+    ShoppingListFilterHandler,
+)
 from app.adapters.ui.components.meal_planning.menu_filter_handler import (
     MenuFilterHandler,
 )
@@ -16,12 +19,18 @@ from app.adapters.ui.views.inventory_view import InventoryView
 from app.adapters.ui.views.logs_view import LogsView
 from app.adapters.ui.views.menus_view import MenusView
 from app.adapters.ui.views.recipes_view import RecipesView
+from app.adapters.ui.views.shopping_list_view import ShoppingListView
 from app.application.inventory.modification_service import InventoryModificationService
+from app.application.inventory.reconciliation_service import (
+    InventoryReconciliationService,
+)
 from app.application.inventory.search_service import InventorySearchService
+from app.application.inventory.shopping_list_service import ShoppingListService
 from app.application.meal_planning.modification_service import MenuModificationService
 from app.application.meal_planning.search_service import MenuSearchService
 from app.application.recipes.modification_service import RecipeModificationService
 from app.application.recipes.search_service import RecipeSearchService
+from app.config.settings import settings
 from app.domain.inventory.inventory_item import InventoryItem
 from app.domain.meal_planning.menu import Menu
 from app.domain.recipes.recipe import Recipe
@@ -77,6 +86,15 @@ def inventory_filter_handler(
     populated_inventory_search_service: InventorySearchService,
 ) -> InventoryFilterHandler:
     return InventoryFilterHandler(search_service=populated_inventory_search_service)
+
+
+@pytest.fixture
+def shopping_list_filter_handler(
+    inventory_shopping_list_service: ShoppingListService,
+) -> ShoppingListFilterHandler:
+    return ShoppingListFilterHandler(
+        shopping_list_service=inventory_shopping_list_service
+    )
 
 
 @pytest.fixture
@@ -141,6 +159,20 @@ def inventory_view(
     view = InventoryView(
         modification_service=inventory_modification_service,
         search_service=populated_inventory_search_service,
+    )
+    view.update = MagicMock()
+    return view
+
+
+@pytest.fixture
+def shopping_list_view(
+    inventory_shopping_list_service: ShoppingListService,
+    inventory_reconciliation_service: InventoryReconciliationService,
+) -> ShoppingListView:
+    view = ShoppingListView(
+        settings=settings,
+        shopping_list_service=inventory_shopping_list_service,
+        inventory_reconciliation_service=inventory_reconciliation_service,
     )
     view.update = MagicMock()
     return view

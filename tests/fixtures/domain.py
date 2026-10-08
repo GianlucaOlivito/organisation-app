@@ -3,6 +3,8 @@ from datetime import date
 import pytest
 
 from app.domain.inventory.inventory_item import InventoryItem
+from app.domain.inventory.shopping_list import ShoppingList
+from app.domain.inventory.shopping_list_item import ShoppingListItem
 from app.domain.meal_planning.course import Course
 from app.domain.meal_planning.menu import Menu
 from app.domain.recipes.recipe import Recipe
@@ -75,3 +77,13 @@ def sample_items(fake_inventory_repo: FakeInventoryRepository) -> list[Inventory
     for item in items:
         fake_inventory_repo.save(item)
     return items
+
+
+@pytest.fixture
+def sample_shopping_list() -> ShoppingList:
+    items = [
+        ShoppingListItem(name="Milk", quantity=2.0, unit="l"),
+        ShoppingListItem(name="Egg", quantity=12.0, unit=""),
+        ShoppingListItem(name="Bread", quantity=500.0, unit="g"),
+    ]
+    return ShoppingList(items=items)
