@@ -65,5 +65,8 @@ class EntityView[T](BaseView):
         ]
         self.update()
 
+    def refresh(self) -> None:
+        self._search()
+
     def _build_view(self) -> None:
         self.controls.extend([self._toolbar, self._content_container])

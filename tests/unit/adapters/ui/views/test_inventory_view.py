@@ -86,3 +86,14 @@ def test_save_form_creates_modifies_and_deletes_items(
     inventory_modification_service.create.assert_called_once_with(new_item)
     inventory_modification_service.delete.assert_called_once_with(sample_items[1].id)
     assert inventory_view._toolbar.visible is True
+
+
+def test_refresh_triggers_search(inventory_view, sample_items):
+    target_item = sample_items[0]
+    inventory_view._search_input.value = target_item.name
+    inventory_view.refresh()
+    card = inventory_view._content_container.controls[0]
+
+    assert isinstance(card, InventoryCard)
+    assert len(card.inventory) == 1
+    assert card.inventory[0].name == target_item.name
