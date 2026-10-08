@@ -32,8 +32,10 @@ def test_apply_shopping_list_updates_existing_and_creates_new_items(
     bread = next(item for item in inventory_items if item.name == "Bread")
 
     assert milk.id == existing_item.id
-    assert milk.quantity == 3.0
+    assert milk.quantity == 3000
+    assert milk.unit == "ml"
     assert bread.quantity == 1.0
+    assert bread.unit == "pcs"
 
 
 def test_consume_meals_for_period_raises_error_for_invalid_date_range(
@@ -116,3 +118,47 @@ def test_consume_meals_ignores_ingredients_not_present_in_inventory(
     )
 
     assert fake_inventory_repo.get_all() == []
+
+
+def test_consume_meals_for_period_does_nothing_when_no_menus_exist(
+    inventory_reconciliation_service, fake_inventory_repo
+):
+    item = InventoryItem(name="Milk", quantity=1000.0, unit="ml")
+    fake_inventory_repo.save(item)
+    inventory_reconciliation_service.consume_meals_for_period(
+        date(2026, 9, 1), date(2026, 9, 2)
+    )
+    saved_item = fake_inventory_repo.get_by_id(item.id)
+
+    assert saved_item.quantity == 1000.0
+
+
+def test_consume_meals_for_period_handles_partial_stock(
+    inventory_reconciliation_service,
+    fake_inventory_repo,
+    fake_menu_repo,
+    fake_recipe_repo,
+):
+    fake_inventory_repo.save(InventoryItem(name="Sugar", quantity=50.0, unit="g"))
+    recipe = Recipe(
+        name="Cake",
+        ingredients=[
+            RecipeIngredient(name="Sugar", quantity=100.0, unit="g"),
+            RecipeIngredient(name="Flour", quantity=200.0, unit="g"),
+        ],
+        instructions="Mix and bake.",
+    )
+    fake_recipe_repo.save(recipe)
+    fake_menu_repo.save(
+        Menu(
+            description="Baking",
+            scheduled_date=date(2026, 9, 1),
+            courses=[Course(recipe_id=recipe.id, portions=1)],
+        )
+    )
+    inventory_reconciliation_service.consume_meals_for_period(
+        date(2026, 9, 1), date(2026, 9, 2)
+    )
+    sugar = next(item for item in fake_inventory_repo.get_all() if item.name == "Sugar")
+
+    assert sugar.quantity == 0.0

@@ -133,3 +133,69 @@ def test_generate_shopping_list_aggregates_same_ingredient_across_courses(
 
     assert len(result.items) == 1
     assert result.items[0].quantity == 6.0
+
+
+def test_generate_shopping_list_handles_mixed_unit_conversions(
+    inventory_shopping_list_service,
+    fake_recipe_repo,
+    fake_menu_repo,
+    fake_inventory_repo,
+):
+    recipe = Recipe(
+        name="Cake",
+        ingredients=[RecipeIngredient(name="Flour", quantity=1500.0, unit="g")],
+        instructions="Bake.",
+    )
+    fake_recipe_repo.save(recipe)
+    fake_menu_repo.save(
+        Menu(
+            description="Baking",
+            scheduled_date=date(2026, 9, 1),
+            courses=[Course(recipe_id=recipe.id, portions=1)],
+        )
+    )
+    fake_inventory_repo.save(InventoryItem(name="Flour", quantity=1.0, unit="kg"))
+    result = inventory_shopping_list_service.generate_shopping_list(
+        date(2026, 9, 1), date(2026, 9, 2)
+    )
+
+    assert len(result.items) == 1
+    assert result.items[0].name == "Flour"
+    assert result.items[0].quantity == 500.0
+    assert result.items[0].unit == "g"
+
+
+def test_generate_shopping_list_raises_error_when_no_menus_exist(
+    inventory_shopping_list_service,
+):
+    with pytest.raises(ValueError, match="Ungültige Einkaufsliste"):
+        inventory_shopping_list_service.generate_shopping_list(
+            date(2026, 9, 1), date(2026, 9, 2)
+        )
+
+
+def test_generate_shopping_list_raises_error_when_stock_matches_exactly(
+    inventory_shopping_list_service,
+    fake_recipe_repo,
+    fake_menu_repo,
+    fake_inventory_repo,
+):
+    recipe = Recipe(
+        name="Toast",
+        ingredients=[RecipeIngredient(name="Bread", quantity=2.0, unit="pcs")],
+        instructions="Toast bread.",
+    )
+    fake_recipe_repo.save(recipe)
+    fake_menu_repo.save(
+        Menu(
+            description="Breakfast",
+            scheduled_date=date(2026, 9, 1),
+            courses=[Course(recipe_id=recipe.id, portions=1)],
+        )
+    )
+    fake_inventory_repo.save(InventoryItem(name="Bread", quantity=2.0, unit="pcs"))
+
+    with pytest.raises(ValueError, match="Ungültige Einkaufsliste"):
+        inventory_shopping_list_service.generate_shopping_list(
+            date(2026, 9, 1), date(2026, 9, 2)
+        )

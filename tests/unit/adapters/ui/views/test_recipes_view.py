@@ -115,3 +115,11 @@ def test_delete_recipe(recipes_view, sample_recipes):
     assert all(
         card.recipe.id != recipe_to_delete.id for card in recipes_view._grid.controls
     )
+
+
+def test_refresh_triggers_search(recipes_view):
+    recipes_view._search_input.value = "Tomato Soup"
+    recipes_view.refresh()
+
+    assert len(recipes_view._grid.controls) == 1
+    assert recipes_view._grid.controls[0].recipe.name == "Tomato Soup"

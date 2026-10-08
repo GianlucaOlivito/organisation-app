@@ -117,3 +117,12 @@ def test_delete_menu(menus_view, sample_menus):
 
     assert len(menus_view._grid.controls) == initial_count - 1
     assert all(card.menu.id != menu_to_delete.id for card in menus_view._grid.controls)
+
+
+def test_refresh_triggers_search(menus_view, sample_menus):
+    target_menu = sample_menus[0]
+    menus_view._search_input.value = str(target_menu.id)
+    menus_view.refresh()
+
+    assert len(menus_view._grid.controls) == 1
+    assert menus_view._grid.controls[0].menu.id == target_menu.id

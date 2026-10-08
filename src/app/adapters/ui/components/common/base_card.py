@@ -38,7 +38,12 @@ class BaseCard[T](ft.Card, ABC):
             ),
         )
 
-    def _build_header(self, title: str, entity_id: UUID | None = None) -> ft.Control:
+    def _build_header(
+        self,
+        title: str,
+        entity_id: UUID | None = None,
+        custom_actions: list[ft.Control] | None = None,
+    ) -> ft.Control:
         action_controls: list[ft.Control] = []
         if self.on_edit:
             action_controls.append(
@@ -48,6 +53,8 @@ class BaseCard[T](ft.Card, ABC):
             action_controls.append(
                 create_delete_button(on_click=lambda _: self.on_delete(entity_id))
             )
+        if custom_actions:
+            action_controls.extend(custom_actions)
         header_right_controls: list[ft.Control] = []
         if entity_id:
             header_right_controls.append(create_muted_text(f"ID: {str(entity_id)[:8]}"))

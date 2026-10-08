@@ -33,7 +33,11 @@ class AppLayout(ft.Row):
                 container.inventory_modification_service,
                 container.inventory_search_service,
             ),
-            ShoppingListView(),
+            ShoppingListView(
+                container.settings,
+                container.shopping_list_service,
+                container.inventory_reconciliation_service,
+            ),
             LogsView(container.log_buffer),
         ]
         nav_items = [
@@ -52,5 +56,8 @@ class AppLayout(ft.Row):
         )
 
     def _switch_tab(self, index: int) -> None:
-        self._content_area.content = self._views[index]
+        view = self._views[index]
+        if hasattr(view, "refresh"):
+            view.refresh()
+        self._content_area.content = view
         self._content_area.update()
