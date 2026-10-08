@@ -2,11 +2,55 @@ from datetime import date
 from unittest.mock import MagicMock
 from uuid import uuid4
 
-from app.application.common.calculators import calculate_menu_ingredients
+import pytest
+
+from app.application.common.calculators import (
+    calculate_menu_ingredients,
+    standardize_unit,
+)
 from app.domain.meal_planning.course import Course
 from app.domain.meal_planning.menu import Menu
 from app.domain.recipes.recipe import Recipe
 from app.domain.recipes.recipe_ingredient import RecipeIngredient
+
+
+@pytest.mark.parametrize(
+    "quantity, raw_unit, expected_qty, expected_unit",
+    [
+        (500.0, "g", 500.0, "g"),
+        (200.0, "Gramm", 200.0, "g"),
+        (1.5, "kg", 1500.0, "g"),
+        (2.0, "Kilogramm", 2000.0, "g"),
+        (1.0, "kg.", 1000.0, "g"),
+        (250.0, "ml", 250.0, "ml"),
+        (100.0, "Milliliter", 100.0, "ml"),
+        (2.0, "cl", 20.0, "ml"),
+        (5.0, "dl", 500.0, "ml"),
+        (1.0, "Deziliter", 100.0, "ml"),
+        (0.75, "l", 750.0, "ml"),
+        (2.0, "Liter", 2000.0, "ml"),
+        (1.0, "l.", 1000.0, "ml"),
+        (2.0, "tl", 10.0, "ml"),
+        (1.0, "Teelöffel", 5.0, "ml"),
+        (3.0, "EL", 45.0, "ml"),
+        (1.0, "Esslöffel", 15.0, "ml"),
+        (2.0, "prise", 1.0, "ml"),
+        (1.0, "el.", 15.0, "ml"),
+        (5.0, "", 5.0, ""),
+        (3.0, "stk", 3.0, ""),
+        (4.0, "Stk.", 4.0, ""),
+        (2.0, "Stück", 2.0, ""),
+        (10.0, "Dose", 10.0, "dose"),
+        (1.0, "Packung", 1.0, "packung"),
+        (2.0, "Pck.", 2.0, "pck"),
+    ],
+)
+def test_standardize_unit_converts_units_correctly(
+    quantity: float, raw_unit: str, expected_qty: float, expected_unit: str
+):
+    qty, unit = standardize_unit(quantity, raw_unit)
+    assert qty == expected_qty
+    assert unit == expected_unit
 
 
 def test_calculate_menu_ingredients_aggregates_quantities_correctly():

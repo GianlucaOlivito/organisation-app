@@ -12,20 +12,20 @@ def test_create_inventory_item_success(
     item = InventoryItem(name="Milk", quantity=2.0, unit="l")
     created_item = inventory_modification_service.create(item)
 
-    assert created_item == item
-    assert fake_inventory_repo.get_by_id(item.id) == item
+    assert created_item.name == "Milk"
+    assert created_item.quantity == 2000.0
+    assert created_item.unit == "ml"
 
 
-def test_create_inventory_item_already_exists_raises_error(
+def test_create_inventory_item_merges_with_existing(
     inventory_modification_service, sample_items
 ):
-    sample_item = sample_items[0]
+    new_item = InventoryItem(name="Milk", quantity=1.0, unit="l")
+    result = inventory_modification_service.create(new_item)
 
-    with pytest.raises(
-        ValueError,
-        match=f"INVALID ARGUMENT: Inventory item with ID '{sample_item.id}' already exists.",
-    ):
-        inventory_modification_service.create(sample_item)
+    assert result.id == sample_items[0].id
+    assert result.quantity == 3000.0
+    assert result.unit == "ml"
 
 
 def test_modify_inventory_item_success(
