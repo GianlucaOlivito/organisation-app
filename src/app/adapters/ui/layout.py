@@ -37,6 +37,7 @@ class AppLayout(ft.Row):
                 container.settings,
                 container.shopping_list_service,
                 container.inventory_reconciliation_service,
+                container.markdown_shopping_list_exporter,
             ),
             LogsView(container.log_buffer),
         ]

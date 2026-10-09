@@ -2,6 +2,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from app.adapters.inventory.markdown_shopping_list_exporter import (
+    MarkdownShoppingListExporter,
+)
 from app.adapters.ui.components.inventory.inventory_filter_handler import (
     InventoryFilterHandler,
 )
@@ -168,11 +171,13 @@ def inventory_view(
 def shopping_list_view(
     inventory_shopping_list_service: ShoppingListService,
     inventory_reconciliation_service: InventoryReconciliationService,
+    markdown_exporter: MarkdownShoppingListExporter,
 ) -> ShoppingListView:
     view = ShoppingListView(
         settings=settings,
         shopping_list_service=inventory_shopping_list_service,
         inventory_reconciliation_service=inventory_reconciliation_service,
+        markdown_shopping_list_exporter=markdown_exporter,
     )
     view.update = MagicMock()
     return view
