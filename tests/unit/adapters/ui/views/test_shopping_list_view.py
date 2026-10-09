@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import date
 from unittest.mock import MagicMock
 
@@ -121,3 +122,33 @@ def test_clear_list_resets_content_container_and_state(shopping_list_view):
         shopping_list_view._empty_state
     ]
     assert shopping_list_view.update.called
+
+
+def test_handle_export_shopping_list_exports_when_list_exists(
+    shopping_list_view, tmp_path
+):
+    export_file = tmp_path / "shopping_list.md"
+    shopping_list_view._settings = replace(
+        shopping_list_view._settings, shopping_list_file_path=export_file
+    )
+    shopping_list = ShoppingList(
+        items=[ShoppingListItem(name="Milch", quantity=1.0, unit="l")]
+    )
+    shopping_list_view._shopping_list = shopping_list
+    shopping_list_view._handle_export_shopping_list()
+
+    assert export_file.exists()
+    assert "Milch" in export_file.read_text(encoding="utf-8")
+
+
+def test_handle_export_shopping_list_does_nothing_when_no_list(
+    shopping_list_view, tmp_path
+):
+    export_file = tmp_path / "shopping_list.md"
+    shopping_list_view._settings = replace(
+        shopping_list_view._settings, shopping_list_file_path=export_file
+    )
+    shopping_list_view._shopping_list = None
+    shopping_list_view._handle_export_shopping_list()
+
+    assert not export_file.exists()

@@ -1,5 +1,8 @@
 import flet as ft
 
+from app.adapters.inventory.markdown_shopping_list_exporter import (
+    MarkdownShoppingListExporter,
+)
 from app.adapters.ui.components.common.controls import (
     create_container,
     create_icon_button,
@@ -30,10 +33,12 @@ class ShoppingListView(BaseView):
         settings: Settings,
         shopping_list_service: ShoppingListService,
         inventory_reconciliation_service: InventoryReconciliationService,
+        markdown_shopping_list_exporter: MarkdownShoppingListExporter,
     ) -> None:
         self._settings = settings
         self._shopping_list_service = shopping_list_service
         self._inventory_reconciliation_service = inventory_reconciliation_service
+        self._markdown_shopping_list_exporter = markdown_shopping_list_exporter
         self._filter_handler = ShoppingListFilterHandler(shopping_list_service)
         self._shopping_list: ShoppingList | None = None
         self._empty_state = create_container(
@@ -99,6 +104,13 @@ class ShoppingListView(BaseView):
         self._inventory_reconciliation_service.apply_shopping_list(shopping_list)
         self._clear_list()
 
+    def _handle_export_shopping_list(self) -> None:
+        if self._shopping_list:
+            self._markdown_shopping_list_exporter.export(
+                shopping_list=self._shopping_list,
+                destination=self._settings.shopping_list_file_path,
+            )
+
     def _render_results(self, start_date: str | None, end_date: str | None) -> None:
         shopping_list = self._filter_handler.filter(
             start_date=start_date, end_date=end_date
@@ -111,6 +123,7 @@ class ShoppingListView(BaseView):
             ShoppingListCard(
                 shopping_list=shopping_list,
                 on_apply=self._handle_apply_shopping_list,
+                on_export=self._handle_export_shopping_list,
                 on_clear=self._clear_list,
             )
         ]
