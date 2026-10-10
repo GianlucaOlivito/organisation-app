@@ -1,6 +1,15 @@
 # Architecture Guidelines
+## Architecture Style
+This application is structured as a **Modular Monolith**. It is delivered as a single deployable Python application while maintaining strict internal module boundaries, separating domain logic, application use cases, adapters, and infrastructure.
+- **Reasoning:** A monoloth still seems cleaner for this project. Microservices would add unnecessary complexity.
+
 ## Software Architecture
 This application follows **Hexagonal Architecture** (also called Ports and Adapters) to maintain clear separation of concerns, testability and framework independence.
+
+## Architecture Design Patterns
+- **Repository Pattern**: Abstracts data persistence behind abstract interfaces (`InventoryRepository`, `MenuRepository`, `RecipeRepository`), allowing storage mechanisms (JSON files) to change without affecting business logic.
+- **Dependency Injection / Composition Root**: Centralizes object creation and wiring in `container.py` (`create_container()`), adhering to the Inversion of Control (IoC) principle.
+- **Adapter Pattern**: Translates between external formats/UI data structures and internal domain models (e.g., JSON file serializers, Markdown exporter, in-memory log buffer handler).
 
 ## Layer Structure & Dependency Rules
 Dependencies strictly flow **inward**. Outer layers depend on inner layers; inner layers must not have any knowledge of outer layers.
