@@ -50,6 +50,12 @@ git branch --merged main | Select-String -NotMatch 'main' | ForEach-Object { git
 ```
 
 ## Further Documentation
-* [Architecture Guidelines](docs/architecture.md)
-* [Use Cases](docs/use-cases.md)
 * [Architecture Decision Records (ADRs)](docs/adrs)
+* [Architecture Guidelines](docs/architecture.md)
+* [C4 Architecture Snapshot](docs/C4-architecture-snapshot.md)
+* [Software Design](docs/design.md)
+* [Domain Data Models](docs/domain.md)
+* [Testing](docs/testing.md)
+* [User Interface](docs/ui.md)
+* [Use Cases](docs/use-cases.md)
+* [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md)
