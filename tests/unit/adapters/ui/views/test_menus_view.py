@@ -1,9 +1,8 @@
-from unittest.mock import MagicMock
-
 import flet as ft
 
 from app.adapters.ui.components.meal_planning.menu_card import MenuCard
 from app.adapters.ui.components.meal_planning.menu_form import MenuForm
+from tests.fixtures.ui import UpdateSpy
 
 
 def test_initialization_renders_sample_menus(menus_view, sample_menus):
@@ -96,8 +95,8 @@ def test_close_form_restores_toolbar(menus_view):
 def test_save_form_creates_and_modifies_menu(
     menus_view, meal_planning_modification_service, sample_menus
 ):
-    meal_planning_modification_service.create = MagicMock()
-    meal_planning_modification_service.modify = MagicMock()
+    meal_planning_modification_service.create = UpdateSpy()
+    meal_planning_modification_service.modify = UpdateSpy()
     menus_view._open_form()
     form = menus_view._content_container.controls[0]
     form._on_save(sample_menus[0])

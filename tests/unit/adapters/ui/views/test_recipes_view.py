@@ -1,9 +1,8 @@
-from unittest.mock import MagicMock
-
 import flet as ft
 
 from app.adapters.ui.components.recipes.recipe_card import RecipeCard
 from app.adapters.ui.components.recipes.recipe_form import RecipeForm
+from tests.fixtures.ui import UpdateSpy
 
 
 def test_initialization_renders_sample_recipes(recipes_view, sample_recipes):
@@ -91,8 +90,8 @@ def test_close_form_restores_toolbar(recipes_view):
 def test_save_form_creates_and_modifies_recipe(
     recipes_view, recipes_modification_service, sample_recipes
 ):
-    recipes_modification_service.create = MagicMock()
-    recipes_modification_service.modify = MagicMock()
+    recipes_modification_service.create = UpdateSpy()
+    recipes_modification_service.modify = UpdateSpy()
     recipes_view._open_form()
     form = recipes_view._content_container.controls[0]
     form._on_save(sample_recipes[0])

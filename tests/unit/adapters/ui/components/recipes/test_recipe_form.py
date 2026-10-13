@@ -1,8 +1,7 @@
-from unittest.mock import MagicMock
-
 import flet as ft
 
 from app.domain.recipes.recipe import Recipe
+from tests.fixtures.ui import UpdateSpy
 
 
 def test_initialization_creation_mode(recipe_form):
@@ -15,7 +14,7 @@ def test_initialization_creation_mode(recipe_form):
 def test_initialization_edit_mode(sample_recipes, recipe_form):
     recipe_to_edit = sample_recipes[0]
     recipe_form.__init__(recipe=recipe_to_edit)
-    recipe_form.update = MagicMock()
+    recipe_form.update = UpdateSpy()
 
     assert recipe_form._recipe_id == recipe_to_edit.id
     assert recipe_form._name_field.value == recipe_to_edit.name
@@ -51,7 +50,7 @@ def test_delete_ingredient_row(recipe_form):
     assert len(recipe_form._ingredients_column.controls) == 2
 
     delete_button = recipe_form._ingredients_column.controls[1].controls[3]
-    delete_button.on_click(MagicMock())
+    delete_button.on_click(UpdateSpy())
 
     assert len(recipe_form._ingredients_column.controls) == 1
 
@@ -91,47 +90,44 @@ def test_extract_entity_filters_out_completely_empty_rows(recipe_form):
 
 
 def test_handle_save_success(recipe_form):
-    on_save_mock = MagicMock()
-    recipe_form._on_save = on_save_mock
+    on_save = UpdateSpy()
+    recipe_form._on_save = on_save
     recipe_form._name_field.value = "Omelette"
     recipe_form._instructions_field.value = "Fry eggs in a pan."
     row = recipe_form._ingredients_column.controls[0]
     row.controls[0].value = "Eggs"
     row.controls[1].value = "2"
     row.controls[2].value = "pcs"
-    mock_event = MagicMock()
-    recipe_form._handle_save(mock_event)
+    recipe_form._handle_save(UpdateSpy())
 
     assert recipe_form._error_text.visible is False
-    on_save_mock.assert_called_once()
+    on_save.assert_called_once()
 
-    saved_recipe = on_save_mock.call_args[0][0]
+    saved_recipe = on_save.call_args[0]
 
     assert saved_recipe.name == "Omelette"
 
 
 def test_handle_save_displays_error_on_validation_failure(recipe_form):
-    on_save_mock = MagicMock()
-    recipe_form._on_save = on_save_mock
-    recipe_form._extract_entity = MagicMock(
-        side_effect=ValueError("Name cannot be empty")
+    on_save = UpdateSpy()
+    recipe_form._on_save = on_save
+    recipe_form._extract_entity = lambda: (_ for _ in ()).throw(
+        ValueError("Name cannot be empty")
     )
-    mock_event = MagicMock()
-    recipe_form._handle_save(mock_event)
+    recipe_form._handle_save(UpdateSpy())
 
     assert recipe_form._error_text.visible is True
     assert recipe_form._error_text.value == "Name cannot be empty"
-    on_save_mock.assert_not_called()
+    on_save.assert_not_called()
     recipe_form.update.assert_called_once()
 
 
 def test_close_button_triggers_on_close_callback(recipe_form):
-    on_close_mock = MagicMock()
-    recipe_form._on_close = on_close_mock
+    on_close = UpdateSpy()
+    recipe_form._on_close = on_close
     header_row = recipe_form.controls[0]
     header_action_row = header_row.controls[1]
     close_button = header_action_row.controls[-1]
-    mock_event = MagicMock()
-    close_button.on_click(mock_event)
+    close_button.on_click(UpdateSpy())
 
-    on_close_mock.assert_called_once()
+    on_close.assert_called_once()

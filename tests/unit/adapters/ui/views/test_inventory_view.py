@@ -1,10 +1,9 @@
-from unittest.mock import MagicMock
-
 import flet as ft
 
 from app.adapters.ui.components.inventory.inventory_card import InventoryCard
 from app.adapters.ui.components.inventory.inventory_form import InventoryForm
 from app.domain.inventory.inventory_item import InventoryItem
+from tests.fixtures.ui import UpdateSpy
 
 
 def test_initialization_renders_sample_items(inventory_view, sample_items):
@@ -73,9 +72,9 @@ def test_close_form_restores_toolbar_and_renders_results(inventory_view):
 def test_save_form_creates_modifies_and_deletes_items(
     inventory_view, inventory_modification_service, sample_items
 ):
-    inventory_modification_service.create = MagicMock()
-    inventory_modification_service.modify = MagicMock()
-    inventory_modification_service.delete = MagicMock()
+    inventory_modification_service.create = UpdateSpy()
+    inventory_modification_service.modify = UpdateSpy()
+    inventory_modification_service.delete = UpdateSpy()
     modified_item = sample_items[0]
     new_item = InventoryItem(name="Zucker", quantity=500, unit="g")
     inventory_view._open_form(entity=sample_items)

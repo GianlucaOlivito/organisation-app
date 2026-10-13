@@ -1,10 +1,10 @@
-import asyncio
-from unittest.mock import MagicMock
+from types import SimpleNamespace
 
 import flet as ft
 import pytest
 
 from app.adapters.ui.theme import theme
+from tests.fixtures.ui import UpdateSpy
 
 
 def test_initialization(logs_view):
@@ -55,9 +55,8 @@ def test_clear_logs_button_action(log_buffer, logs_view):
 
 
 def test_filter_logs_event(logs_view):
-    mock_event = MagicMock()
-    mock_event.control.selected = ["ERROR", "CRITICAL"]
-    logs_view._filter.on_change(mock_event)
+    event = SimpleNamespace(control=SimpleNamespace(selected=["ERROR", "CRITICAL"]))
+    logs_view._filter.on_change(event)
 
     assert logs_view._enabled_levels == {"ERROR", "CRITICAL"}
 
@@ -76,8 +75,10 @@ async def test_lifecycle_hooks(log_buffer, logs_view):
 
 
 def test_update_from_buffer_threadsafe(logs_view):
-    mock_loop = MagicMock(spec=asyncio.AbstractEventLoop)
-    mock_loop.is_running.return_value = True
+    mock_loop = SimpleNamespace(
+        is_running=lambda: True,
+        call_soon_threadsafe=UpdateSpy(),
+    )
     logs_view._loop = mock_loop
     logs_view._update_from_buffer()
 

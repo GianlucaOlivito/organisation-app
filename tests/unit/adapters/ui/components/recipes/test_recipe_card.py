@@ -1,9 +1,6 @@
-from uuid import UUID
-
 import flet as ft
 
 from app.adapters.ui.components.recipes.recipe_card import RecipeCard
-from app.domain.recipes.recipe import Recipe
 from app.domain.recipes.recipe_ingredient import RecipeIngredient
 
 
@@ -52,13 +49,13 @@ def test_recipe_card_callback_triggers(sample_recipes):
     edited_recipe = None
     deleted_id = None
 
-    def on_edit(r: Recipe) -> None:
+    def on_edit(recipe) -> None:
         nonlocal edited_recipe
-        edited_recipe = r
+        edited_recipe = recipe
 
-    def on_delete(rid: UUID) -> None:
+    def on_delete(recipe_id) -> None:
         nonlocal deleted_id
-        deleted_id = rid
+        deleted_id = recipe_id
 
     card = RecipeCard(recipe, on_edit=on_edit, on_delete=on_delete)
     header_row = card.content.content.controls[0]

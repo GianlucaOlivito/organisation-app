@@ -1,11 +1,3 @@
-from unittest.mock import MagicMock
-
-from app.adapters.ui.components.inventory.shopping_list_filter_handler import (
-    ShoppingListFilterHandler,
-)
-from app.application.inventory.shopping_list_service import ShoppingListService
-
-
 def test_filter_returns_none_when_no_inputs(shopping_list_filter_handler):
     result = shopping_list_filter_handler.filter()
 
@@ -51,12 +43,21 @@ def test_filter_returns_none_for_inverted_date_range(
     assert result is None
 
 
-def test_filter_handles_service_value_error_gracefully():
-    mock_service = MagicMock(spec=ShoppingListService)
-    mock_service.generate_shopping_list.side_effect = ValueError(
-        "Ungültige Einkaufsliste"
+def test_filter_handles_service_value_error_gracefully(
+    inventory_shopping_list_service,
+    shopping_list_filter_handler,
+    monkeypatch,
+):
+    def raise_value_error(*args, **kwargs):
+        raise ValueError("Ungültige Einkaufsliste")
+
+    monkeypatch.setattr(
+        inventory_shopping_list_service,
+        "generate_shopping_list",
+        raise_value_error,
     )
-    handler = ShoppingListFilterHandler(mock_service)
-    result = handler.filter(start_date="01.09.2026", end_date="05.09.2026")
+    result = shopping_list_filter_handler.filter(
+        start_date="01.09.2026", end_date="05.09.2026"
+    )
 
     assert result is None

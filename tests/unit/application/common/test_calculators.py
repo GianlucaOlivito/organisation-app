@@ -1,5 +1,4 @@
 from datetime import date
-from unittest.mock import MagicMock
 from uuid import uuid4
 
 import pytest
@@ -49,11 +48,14 @@ def test_standardize_unit_converts_units_correctly(
     quantity: float, raw_unit: str, expected_qty: float, expected_unit: str
 ):
     qty, unit = standardize_unit(quantity, raw_unit)
+
     assert qty == expected_qty
     assert unit == expected_unit
 
 
-def test_calculate_menu_ingredients_aggregates_quantities_correctly():
+def test_calculate_menu_ingredients_aggregates_quantities_correctly(
+    recipes_search_service,
+):
     recipe_1 = Recipe(
         name="Pasta",
         ingredients=[
@@ -67,11 +69,9 @@ def test_calculate_menu_ingredients_aggregates_quantities_correctly():
         ingredients=[RecipeIngredient(name="Tomato Sauce", quantity=20.0, unit="g")],
         instructions="Mix and boil.",
     )
-    recipe_search_service = MagicMock()
-    recipe_search_service.get_by_id.side_effect = lambda r_id: {
-        recipe_1.id: recipe_1,
-        recipe_2.id: recipe_2,
-    }.get(r_id)
+    recipes_search_service._recipe_repository.save(recipe_1)
+    recipes_search_service._recipe_repository.save(recipe_2)
+
     menus = [
         Menu(
             scheduled_date=date(2026, 1, 1),
@@ -82,15 +82,15 @@ def test_calculate_menu_ingredients_aggregates_quantities_correctly():
             ],
         )
     ]
-    totals = calculate_menu_ingredients(menus, recipe_search_service)
+    totals = calculate_menu_ingredients(menus, recipes_search_service)
 
     assert totals[("Pasta", "g")] == 200.0
     assert totals[("Tomato Sauce", "g")] == 120.0
 
 
-def test_calculate_menu_ingredients_handles_missing_recipes_gracefully():
-    recipe_search_service = MagicMock()
-    recipe_search_service.get_by_id.return_value = None
+def test_calculate_menu_ingredients_handles_missing_recipes_gracefully(
+    recipes_search_service,
+):
     menus = [
         Menu(
             scheduled_date=date(2026, 1, 1),
@@ -98,13 +98,14 @@ def test_calculate_menu_ingredients_handles_missing_recipes_gracefully():
             courses=[Course(recipe_id=uuid4(), portions=2)],
         )
     ]
-    totals = calculate_menu_ingredients(menus, recipe_search_service)
+    totals = calculate_menu_ingredients(menus, recipes_search_service)
 
     assert totals == {}
 
 
-def test_calculate_menu_ingredients_returns_empty_dict_for_empty_menus():
-    recipe_search_service = MagicMock()
-    totals = calculate_menu_ingredients([], recipe_search_service)
+def test_calculate_menu_ingredients_returns_empty_dict_for_empty_menus(
+    recipes_search_service,
+):
+    totals = calculate_menu_ingredients([], recipes_search_service)
 
     assert totals == {}

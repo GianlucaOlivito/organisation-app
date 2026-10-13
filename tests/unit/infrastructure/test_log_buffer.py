@@ -1,6 +1,5 @@
-from unittest.mock import MagicMock
-
 from app.infrastructure.log_buffer import LogBuffer
+from tests.fixtures.ui import UpdateSpy
 
 
 def test_append_and_take_snapshot(log_buffer):
@@ -34,7 +33,7 @@ def test_capacity_eviction():
 
 
 def test_listener_notification_on_append(log_buffer):
-    listener = MagicMock()
+    listener = UpdateSpy()
     log_buffer.subscribe(listener)
     log_buffer.append("WARNING", "Test warning")
 
@@ -42,7 +41,7 @@ def test_listener_notification_on_append(log_buffer):
 
 
 def test_unsubscribe_listener(log_buffer):
-    listener = MagicMock()
+    listener = UpdateSpy()
     log_buffer.subscribe(listener)
     log_buffer.unsubscribe(listener)
     log_buffer.append("INFO", "Test message")
@@ -51,10 +50,11 @@ def test_unsubscribe_listener(log_buffer):
 
 
 def test_clear_buffer_notifies_listeners(log_buffer):
-    listener = MagicMock()
+    listener = UpdateSpy()
     log_buffer.subscribe(listener)
     log_buffer.append("INFO", "Log before clear")
-    listener.reset_mock()
+    listener.called = False
+    listener.call_count = 0
     log_buffer.clear()
 
     assert len(log_buffer.take_snapshot()) == 0

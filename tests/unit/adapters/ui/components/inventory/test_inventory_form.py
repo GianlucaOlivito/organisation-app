@@ -1,8 +1,7 @@
-from unittest.mock import MagicMock
-
 import flet as ft
 
 from app.domain.inventory.inventory_item import InventoryItem
+from tests.fixtures.ui import UpdateSpy
 
 
 def test_initialization_creation_mode(inventory_form):
@@ -17,7 +16,7 @@ def test_initialization_creation_mode(inventory_form):
 
 def test_initialization_edit_mode(sample_items, inventory_form):
     inventory_form.__init__(inventory=sample_items)
-    inventory_form.update = MagicMock()
+    inventory_form.update = UpdateSpy()
 
     assert len(inventory_form._items_column.controls) == len(sample_items)
 
@@ -48,7 +47,7 @@ def test_delete_item_row(inventory_form):
     assert len(inventory_form._items_column.controls) == 2
 
     delete_button = inventory_form._items_column.controls[1].controls[3]
-    delete_button.on_click(MagicMock())
+    delete_button.on_click(UpdateSpy())
 
     assert len(inventory_form._items_column.controls) == 1
 
@@ -81,46 +80,43 @@ def test_extract_entity_filters_out_completely_empty_rows(inventory_form):
 
 
 def test_handle_save_success(inventory_form):
-    on_save_mock = MagicMock()
-    inventory_form._on_save = on_save_mock
+    on_save = UpdateSpy()
+    inventory_form._on_save = on_save
     row = inventory_form._items_column.controls[0]
     row.controls[0].value = "Milk"
     row.controls[1].value = "2"
     row.controls[2].value = "L"
-    mock_event = MagicMock()
-    inventory_form._handle_save(mock_event)
+    inventory_form._handle_save(UpdateSpy())
 
     assert inventory_form._error_text.visible is False
-    on_save_mock.assert_called_once()
+    on_save.assert_called_once()
 
-    saved_inventory = on_save_mock.call_args[0][0]
+    saved_inventory = on_save.call_args[0]
 
     assert len(saved_inventory) == 1
     assert saved_inventory[0].name == "Milk"
 
 
 def test_handle_save_displays_error_on_validation_failure(inventory_form):
-    on_save_mock = MagicMock()
-    inventory_form._on_save = on_save_mock
-    inventory_form._extract_entity = MagicMock(
-        side_effect=ValueError("Name cannot be empty")
+    on_save = UpdateSpy()
+    inventory_form._on_save = on_save
+    inventory_form._extract_entity = lambda: (_ for _ in ()).throw(
+        ValueError("Name cannot be empty")
     )
-    mock_event = MagicMock()
-    inventory_form._handle_save(mock_event)
+    inventory_form._handle_save(UpdateSpy())
 
     assert inventory_form._error_text.visible is True
     assert inventory_form._error_text.value == "Name cannot be empty"
-    on_save_mock.assert_not_called()
+    on_save.assert_not_called()
     inventory_form.update.assert_called_once()
 
 
 def test_close_button_triggers_on_close_callback(inventory_form):
-    on_close_mock = MagicMock()
-    inventory_form._on_close = on_close_mock
+    on_close = UpdateSpy()
+    inventory_form._on_close = on_close
     header_row = inventory_form.controls[0]
     header_action_row = header_row.controls[1]
     close_button = header_action_row.controls[-1]
-    mock_event = MagicMock()
-    close_button.on_click(mock_event)
+    close_button.on_click(UpdateSpy())
 
-    on_close_mock.assert_called_once()
+    on_close.assert_called_once()
