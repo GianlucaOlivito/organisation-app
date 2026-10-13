@@ -1,12 +1,9 @@
-from unittest.mock import MagicMock
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import flet as ft
 
 from app.adapters.ui.components.meal_planning.menu_card import MenuCard
-from app.application.recipes.search_service import RecipeSearchService
 from app.domain.meal_planning.course import Course
-from app.domain.meal_planning.menu import Menu
 
 
 def test_format_course_quantities_and_grammar():
@@ -17,20 +14,14 @@ def test_format_course_quantities_and_grammar():
     assert MenuCard._format_course(2, "Tomato Soup") == "• 2 Portionen Tomato Soup"
 
 
-def test_menu_card_renders_full_data(sample_menus, sample_recipes):
+def test_menu_card_renders_full_data(
+    recipes_search_service, sample_menus, sample_recipes
+):
     menu = sample_menus[0]
     valid_recipe = sample_recipes[0]
-    missing_recipe_id = uuid4()
-    menu.courses.append(Course(recipe_id=missing_recipe_id, portions=1))
-    mock_search_service = MagicMock(spec=RecipeSearchService)
-
-    def side_effect(rid: UUID):
-        if rid == valid_recipe.id:
-            return valid_recipe
-        return None
-
-    mock_search_service.get_by_id.side_effect = side_effect
-    card = MenuCard(menu, recipe_search_service=mock_search_service)
+    recipes_search_service._recipe_repository.save(valid_recipe)
+    menu.courses.append(Course(recipe_id=uuid4(), portions=1))
+    card = MenuCard(menu, recipe_search_service=recipes_search_service)
 
     assert isinstance(card, ft.Card)
 
@@ -52,23 +43,23 @@ def test_menu_card_renders_full_data(sample_menus, sample_recipes):
     assert courses_section.controls[2].value == "• 1 Portion Unbekanntes Rezept"
 
 
-def test_menu_card_callback_triggers(sample_menus):
+def test_menu_card_callback_triggers(recipes_search_service, sample_menus):
     menu = sample_menus[0]
-    mock_search_service = MagicMock(spec=RecipeSearchService)
+
     edited_menu = None
     deleted_id = None
 
-    def on_edit(m: Menu) -> None:
+    def on_edit(menu) -> None:
         nonlocal edited_menu
-        edited_menu = m
+        edited_menu = menu
 
-    def on_delete(mid: UUID) -> None:
+    def on_delete(menu_id) -> None:
         nonlocal deleted_id
-        deleted_id = mid
+        deleted_id = menu_id
 
     card = MenuCard(
         menu,
-        recipe_search_service=mock_search_service,
+        recipe_search_service=recipes_search_service,
         on_edit=on_edit,
         on_delete=on_delete,
     )

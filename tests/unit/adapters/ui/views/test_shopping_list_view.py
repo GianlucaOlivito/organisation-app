@@ -1,6 +1,5 @@
 from dataclasses import replace
 from datetime import date
-from unittest.mock import MagicMock
 
 from app.domain.inventory.shopping_list import ShoppingList
 from app.domain.inventory.shopping_list_item import ShoppingListItem
@@ -8,6 +7,7 @@ from app.domain.meal_planning.course import Course
 from app.domain.meal_planning.menu import Menu
 from app.domain.recipes.recipe import Recipe
 from app.domain.recipes.recipe_ingredient import RecipeIngredient
+from tests.fixtures.ui import UpdateSpy
 
 
 def test_shopping_list_view_initialization_renders_empty_state(shopping_list_view):
@@ -63,7 +63,7 @@ def test_handle_consume_meals_calls_reconciliation_service(
     shopping_list_view,
     inventory_reconciliation_service,
 ):
-    spy_consume = MagicMock(
+    spy_consume = UpdateSpy(
         side_effect=inventory_reconciliation_service.consume_meals_for_period
     )
     inventory_reconciliation_service.consume_meals_for_period = spy_consume
@@ -81,7 +81,7 @@ def test_handle_consume_meals_ignores_invalid_dates(
     shopping_list_view,
     inventory_reconciliation_service,
 ):
-    spy_consume = MagicMock()
+    spy_consume = UpdateSpy()
     inventory_reconciliation_service.consume_meals_for_period = spy_consume
     shopping_list_view._start_date_input.value = "invalid-date"
     shopping_list_view._end_date_input.value = "05.09.2026"
@@ -94,7 +94,7 @@ def test_handle_apply_shopping_list_applies_and_clears_list(
     shopping_list_view,
     inventory_reconciliation_service,
 ):
-    spy_apply = MagicMock(
+    spy_apply = UpdateSpy(
         side_effect=inventory_reconciliation_service.apply_shopping_list
     )
     inventory_reconciliation_service.apply_shopping_list = spy_apply

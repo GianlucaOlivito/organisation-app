@@ -1,5 +1,3 @@
-from unittest.mock import MagicMock
-
 import pytest
 
 from app.adapters.inventory.markdown_shopping_list_exporter import (
@@ -38,6 +36,35 @@ from app.domain.inventory.inventory_item import InventoryItem
 from app.domain.meal_planning.menu import Menu
 from app.domain.recipes.recipe import Recipe
 from app.infrastructure.log_buffer import LogBuffer
+
+
+class UpdateSpy:
+    def __init__(self, side_effect=None):
+        self.called = False
+        self.call_count = 0
+        self.call_args = None
+        self.call_kwargs = None
+        self.side_effect = side_effect
+
+    def __call__(self, *args, **kwargs):
+        self.called = True
+        self.call_count += 1
+        self.call_args = args
+        self.call_kwargs = kwargs
+        if self.side_effect:
+            return self.side_effect(*args, **kwargs)
+
+    def assert_called_once(self):
+        assert self.called is True
+        assert self.call_count == 1
+
+    def assert_not_called(self):
+        assert self.called is False
+
+    def assert_called_once_with(self, *expected_args, **expected_kwargs):
+        self.assert_called_once()
+        assert self.call_args == expected_args
+        assert self.call_kwargs == expected_kwargs
 
 
 @pytest.fixture
@@ -103,21 +130,21 @@ def shopping_list_filter_handler(
 @pytest.fixture
 def recipe_form() -> RecipeForm:
     form = RecipeForm()
-    form.update = MagicMock()
+    form.update = UpdateSpy()
     return form
 
 
 @pytest.fixture
 def menu_form() -> MenuForm:
     form = MenuForm()
-    form.update = MagicMock()
+    form.update = UpdateSpy()
     return form
 
 
 @pytest.fixture
 def inventory_form() -> InventoryForm:
     form = InventoryForm()
-    form.update = MagicMock()
+    form.update = UpdateSpy()
     return form
 
 
@@ -135,7 +162,7 @@ def recipes_view(
         modification_service=recipes_modification_service,
         search_service=populated_recipe_search_service,
     )
-    view.update = MagicMock()
+    view.update = UpdateSpy()
     return view
 
 
@@ -150,7 +177,7 @@ def menus_view(
         menu_search_service=populated_menu_search_service,
         recipe_search_service=populated_recipe_search_service,
     )
-    view.update = MagicMock()
+    view.update = UpdateSpy()
     return view
 
 
@@ -163,7 +190,7 @@ def inventory_view(
         modification_service=inventory_modification_service,
         search_service=populated_inventory_search_service,
     )
-    view.update = MagicMock()
+    view.update = UpdateSpy()
     return view
 
 
@@ -179,5 +206,5 @@ def shopping_list_view(
         inventory_reconciliation_service=inventory_reconciliation_service,
         markdown_shopping_list_exporter=markdown_exporter,
     )
-    view.update = MagicMock()
+    view.update = UpdateSpy()
     return view

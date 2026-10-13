@@ -1,9 +1,8 @@
-from unittest.mock import MagicMock
-
 import flet as ft
 
 from app.adapters.ui.components.common.sidebar import Sidebar
 from app.adapters.ui.theme import theme
+from tests.fixtures.ui import UpdateSpy
 
 
 def test_sidebar_initialization():
@@ -25,10 +24,10 @@ def test_sidebar_initialization():
 
 
 def test_sidebar_tab_selection_updates_colors_and_triggers_callback():
-    on_change_mock = MagicMock()
+    on_change = UpdateSpy()
     items = [(ft.Icons.HOME, "Home"), (ft.Icons.SETTINGS, "Settings")]
-    sidebar = Sidebar(items=items, selected_index=0, on_change=on_change_mock)
-    sidebar.update = MagicMock()
+    sidebar = Sidebar(items=items, selected_index=0, on_change=on_change)
+    sidebar.update = UpdateSpy()
     sidebar._handle_select(1)
 
     assert sidebar._selected_index == 1
@@ -43,16 +42,16 @@ def test_sidebar_tab_selection_updates_colors_and_triggers_callback():
     assert new_icon.color == theme.color_active
     assert new_text.color == theme.color_active
     sidebar.update.assert_called_once()
-    on_change_mock.assert_called_once_with(1)
+    on_change.assert_called_once_with(1)
 
 
 def test_sidebar_selecting_current_tab_is_noop():
-    on_change_mock = MagicMock()
+    on_change = UpdateSpy()
     items = [(ft.Icons.HOME, "Home"), (ft.Icons.SETTINGS, "Settings")]
-    sidebar = Sidebar(items=items, selected_index=0, on_change=on_change_mock)
-    sidebar.update = MagicMock()
+    sidebar = Sidebar(items=items, selected_index=0, on_change=on_change)
+    sidebar.update = UpdateSpy()
     sidebar._handle_select(0)
 
     assert sidebar._selected_index == 0
     sidebar.update.assert_not_called()
-    on_change_mock.assert_not_called()
+    on_change.assert_not_called()
