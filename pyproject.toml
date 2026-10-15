@@ -1,6 +1,6 @@
 [project]
-name = "organisation-app"
-version = "0.1.0"
+name = "Savoria"
+version = "1.0.0"
 description = "A multi-purpose organisation app written in python."
 readme = "README.md"
 requires-python = ">=3.14"
@@ -18,6 +18,7 @@ where = ["src"]
 [dependency-groups]
 dev = [
     "poethepoet>=0.48.0",
+    "pyinstaller",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "ruff>=0.16.4",
@@ -38,6 +39,10 @@ git-sync = [
     { cmd = "git checkout main" },
     { cmd = "git pull --prune" },
     { shell = "git branch --merged main | Select-String -NotMatch 'main' | ForEach-Object { git branch -d $_.ToString().Trim() }", interpreter = "powershell" }
+]
+build-exe = [
+    { cmd = "flet pack main.py --name Savoria --icon assets/logo.ico" },
+    { cmd = '''powershell -Command "Copy-Item -Recurse -Force assets dist/assets"''' }
 ]
 [tool.poe.tasks.git-ship]
 sequence = [

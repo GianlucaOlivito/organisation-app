@@ -24,8 +24,12 @@ which should be modular, easily extendable and scalable.
 # Install dependencies
 uv sync
 
-# Run the application
+# Run the application as a developer
 uv run main.py
+
+# Run the application as a user
+# Unzip folder "savoria-X.Y.Z", enter unzipped folder and 
+# double click Savoria.exe to launch the app.
 ```
 
 ### UV Poethepoet Task Runner for Workflow Automation
@@ -47,10 +51,17 @@ uv run poe git-sync
 git checkout main
 git pull --prune
 git branch --merged main | Select-String -NotMatch 'main' | ForEach-Object { git branch -d $_.ToString().Trim() }
+
+uv run poe build-exe
+# Task 'build-exe':
+flet pack main.py --name Savoria --icon assets/logo.ico
+'''powershell -Command "Copy-Item -Recurse -Force assets dist/assets"'''
 ```
 
 ## Further Documentation
 * [Architecture Decision Records (ADRs)](docs/adrs)
+* [Release Management](docs/release/release-management.md)
+* [Release Notes](docs/release/release-notes.md)
 * [Architecture Guidelines](docs/architecture.md)
 * [C4 Architecture Snapshot](docs/C4-architecture-snapshot.md)
 * [Software Design](docs/design.md)

@@ -1,9 +1,13 @@
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-ROOT_DIR: Path = next(
-    p for p in Path(__file__).resolve().parents if (p / "pyproject.toml").exists()
-)
+if getattr(sys, "frozen", False):
+    ROOT_DIR = Path(sys.executable).parent
+else:
+    ROOT_DIR: Path = next(
+        p for p in Path(__file__).resolve().parents if (p / "pyproject.toml").exists()
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -11,7 +15,7 @@ class Settings:
     """Utility class for application settings."""
 
     app_title: str = "Savoria"
-    app_version: str = "undefined"
+    app_version: str = "1.0.0"
     assets_dir: Path = ROOT_DIR / "assets"
     app_logo_ico: str = "logo.ico"
     app_logo_png: str = "logo.png"
