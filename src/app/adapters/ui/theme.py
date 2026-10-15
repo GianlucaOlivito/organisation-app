@@ -18,6 +18,7 @@ class Theme:
     grid_max_extent: int = 400
     grid_aspect_ratio: float = 1.0
     col_width_small: int = 100
+    col_width_medium: int = 250
     input_field_min_lines: int = 5
     font_family: str = "Consolas"
     font_size_xl: int = 24

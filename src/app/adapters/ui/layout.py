@@ -8,6 +8,7 @@ from app.adapters.ui.theme import theme
 from app.infrastructure.container import Container
 
 from .components.common.sidebar import Sidebar
+from .views.info_view import InfoView
 from .views.inventory_view import InventoryView
 from .views.logs_view import LogsView
 from .views.menus_view import MenusView
@@ -40,6 +41,7 @@ class AppLayout(ft.Row):
                 container.markdown_shopping_list_exporter,
             ),
             LogsView(container.log_buffer),
+            InfoView(container.settings),
         ]
         nav_items = [
             (ft.Icons.RESTAURANT_MENU, "Rezepte"),
@@ -47,6 +49,7 @@ class AppLayout(ft.Row):
             (ft.Icons.INVENTORY_2, "Vorrat"),
             (ft.Icons.SHOPPING_CART, "Einkauf"),
             (ft.Icons.TERMINAL, "Logdaten"),
+            (ft.Icons.INFO_OUTLINE, "Info"),
         ]
         self._sidebar = Sidebar(items=nav_items, on_change=self._switch_tab)
         self._content_area = create_container(content=self._views[0], expand=True)

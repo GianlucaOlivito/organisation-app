@@ -20,7 +20,7 @@ async def test_app_initialization_configures_page_settings(mock_setup_logging):
     cfg = container.settings
 
     assert page.title == cfg.app_title
-    assert page.window.icon == str(cfg.assets_dir / cfg.app_logo_file_name)
+    assert page.window.icon == str(cfg.assets_dir / cfg.app_logo_ico)
     assert page.theme_mode == ft.ThemeMode.SYSTEM
     assert page.padding == 0
     assert page.window.width == cfg.window_width

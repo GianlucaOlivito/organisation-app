@@ -16,6 +16,7 @@ from app.adapters.ui.components.meal_planning.menu_filter_handler import (
 from app.adapters.ui.components.meal_planning.menu_form import MenuForm
 from app.adapters.ui.components.recipes.recipe_filter_handler import RecipeFilterHandler
 from app.adapters.ui.components.recipes.recipe_form import RecipeForm
+from app.adapters.ui.views.info_view import InfoView
 from app.adapters.ui.views.inventory_view import InventoryView
 from app.adapters.ui.views.logs_view import LogsView
 from app.adapters.ui.views.menus_view import MenusView
@@ -206,5 +207,12 @@ def shopping_list_view(
         inventory_reconciliation_service=inventory_reconciliation_service,
         markdown_shopping_list_exporter=markdown_exporter,
     )
+    view.update = UpdateSpy()
+    return view
+
+
+@pytest.fixture
+def info_view() -> InfoView:
+    view = InfoView(settings=settings)
     view.update = UpdateSpy()
     return view
