@@ -15,7 +15,7 @@ class App:
     async def _configure_page(self, page: ft.Page) -> None:
         cfg = self._container.settings
         page.title = cfg.app_title
-        page.window.icon = str(cfg.assets_dir / cfg.app_logo_file_name)
+        page.window.icon = str(cfg.assets_dir / cfg.app_logo_ico)
         page.theme_mode = theme.page_theme_mode
         page.theme = ft.Theme(scrollbar_theme=theme.scrollbar_theme)
         page.padding = theme.spacing_none

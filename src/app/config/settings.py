@@ -11,8 +11,10 @@ class Settings:
     """Utility class for application settings."""
 
     app_title: str = "Savoria"
+    app_version: str = "undefined"
     assets_dir: Path = ROOT_DIR / "assets"
-    app_logo_file_name: str = "logo.ico"
+    app_logo_ico: str = "logo.ico"
+    app_logo_png: str = "logo.png"
     window_width: int = 1000
     window_height: int = 700
     window_min_width: int = 800
